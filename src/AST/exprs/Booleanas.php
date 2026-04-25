@@ -18,8 +18,8 @@ trait Booleanas
         $op = $ctx->getChild(1)->getText();
         $this->asmGenerador->comment("Relacional: " . $op);
 
-        $right = $this->stack->popVal();
-        $left = $this->stack->popVal();
+        $right = $this->stack->popVal("x10");
+        $left = $this->stack->popVal("x11");
 
         $this->asmGenerador->cmp($left, $right);
 
@@ -33,7 +33,7 @@ trait Booleanas
         }
 
         $this->stack->pushVal("x9");
-        return Result::stack(Result::BOOL, $this->stack->getStackOffset());
+        return Result::stack(Result::BOOL, $this->stack->getStackOff());
     }
 
     public function visitAndExpr(AndExprContext $ctx){
@@ -42,12 +42,12 @@ trait Booleanas
 
         $this->asmGenerador->comment("Logico: AND && ");
 
-        $right = $this->stack->popVal();
-        $left = $this->stack->popVal();
+        $right = $this->stack->popVal("x10");
+        $left = $this->stack->popVal("x11");
 
         $this->asmGenerador->and_op("x9", $left, $right);
         $this->stack->pushVal("x9");
-        return Result::stack(Result::BOOL, $this->stack->getStackOffset());
+        return Result::stack(Result::BOOL, $this->stack->getStackOff());
 
     }
 
@@ -57,12 +57,12 @@ trait Booleanas
 
         $this->asmGenerador->comment("Logico: OR || ");
 
-        $right = $this->stack->popVal();
-        $left = $this->stack->popVal();
+        $right = $this->stack->popVal("x10");
+        $left = $this->stack->popVal("x11");
 
-        $this->asmGenerador->and_op("x9", $left, $right);
+        $this->asmGenerador->orr("x9", $left, $right);
         $this->stack->pushVal("x9");
-        return Result::stack(Result::BOOL, $this->stack->getStackOffset());
+        return Result::stack(Result::BOOL, $this->stack->getStackOff());
 
     }
 
@@ -78,7 +78,7 @@ trait Booleanas
 
 
         $this->stack->pushVal("x9");
-        return Result::stack(Result::BOOL, $this->stack->getStackOffset());
+        return Result::stack(Result::BOOL, $this->stack->getStackOff());
 
     }
 }

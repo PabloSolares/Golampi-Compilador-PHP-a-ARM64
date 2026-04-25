@@ -66,22 +66,29 @@ trait Variables
     }
 
     public function visitAssingment(AssingmentContext $ctx) {
-        if ($ctx->assingExp()->idList() !== null) {
-            $ids = $ctx->assingExp()->idList()->ID();
-            
-            $this->asmGenerador->comment("Asignacion a: " . $ctx->assingExp()->idList()->getText());
-            $this->visit($ctx->exprList());
-            
-            for ($i = count($ids) - 1; $i >= 0; $i--) {
-                $id = $ids[$i]->getText();
-                $reg = $this->stack->popVal();
-                
-                try {
-                    $offset = $this->env->getStackOff($id);
-                    $this->asmGenerador->str($reg, "x29", "-".$offset);
-                } catch (\Exception $e) {
-                    $this->addErr($e->getMessage(), $ctx);
-                }
+        $vars = $ctx->assingExp();
+
+        // evalua la parte derecha y manda el valor a la pila
+        $this->visit($ctx->exprList());
+
+        $ope = $ctx->typeAssing()->getText();
+
+        if($vars->idList() !== null){
+            $idName = $vars->idList()->ID(0)->getText();
+            if(!$this->env->has($idName)){
+                $this->addErr("Variable '$idName' no declarada para asignacion");
+                return Result::buildVacio();
+            }
+
+            $this->asmGenerador->comment("Reasignacion de variable: " . $idName);
+
+            $valReg = $this->stack->popVal("x9");
+
+            $symbol = $this->env->get($idName);
+            $offset = $symbol->offset;
+
+            if($ope === "="){
+                $this->asmGenerador->str($valReg, "x29", "-$offset");
             }
         }
         return Result::buildVacio();

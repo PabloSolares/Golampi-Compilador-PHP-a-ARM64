@@ -44,7 +44,7 @@ class ASMGenerator {
 
     public function generateLabel($prefix = "label"){
         $label = $prefix . "_" .  $this->labelCounter;
-        $this->labelCounter;
+        $this->labelCounter++;
         return $label;
     }
 
@@ -221,6 +221,9 @@ class ASMGenerator {
         $itoa .= "strb w3, [x2]\n";
         $itoa .= "mov x4, #10\n";
         $itoa .= "mov x5, x0\n";
+        $itoa .= "cmp x5, #0\n";
+        $itoa .= "b.ge loop \n";
+        $itoa .= "neg x5, x5\n";
         $itoa .= "loop:\n";
         $itoa .= "udiv x6, x5, x4\n";
         $itoa .= "msub x7, x6, x4, x5\n";
@@ -229,6 +232,13 @@ class ASMGenerator {
         $itoa .= "strb w7, [x2]\n";
         $itoa .= "mov x5, x6\n";
         $itoa .= "cbnz x6, loop\n";
+        $itoa .= "cmp x0, #0 \n";
+        $itoa .= "bge done_itoa \n";
+        $itoa .= "mov w7, #45 \n";
+        $itoa .= "sub x2, x2, #1 \n";
+        $itoa .= "strb w7, [x2] \n";
+        $itoa .= "done_itoa: \n";
+        
         $itoa .= "ldr x3, =buffer\n";
         $itoa .= "add x3, x3, #31\n";
         $itoa .= "sub x1, x3, x2\n";

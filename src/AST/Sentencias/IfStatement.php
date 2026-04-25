@@ -7,35 +7,51 @@ use Context\IfDclContext;
 
 trait IfStatement{
     public function visitIfDcl(IfDclContext $ctx){
-        $conditionRes = $this->visit($ctx->expression());
+        $this->visit($ctx->expression());
 
-        $conditionReg = $this->stack->popVal();
+        $conditionReg = $this->stack->popVal("x9");
 
         $endLabel = $this->asmGenerador->generateLabel("if_end");
 
-        $elseLabel = $ctx->else() !== null ? $this->asmGenerador->generateLabel("if_else") : $endLabel;
+        $hasElse = $ctx->block(1) !== null;
+        $elseLabel = $hasElse ? $this->asmGenerador->generateLabel("if_else") : $endLabel;
 
 
         $this->asmGenerador->comment("If: evaluar condicion");
+
         $this->asmGenerador->cmp($conditionReg, "xzr");
 
-        if ($ctx->else() !== null) {
-            $this->asmGenerador->beq($elseLabel);
-        } else {
-            $this->asmGenerador->beq($endLabel);
-        }
+        $this->asmGenerador->beq($elseLabel);
+
+    
 
         $this->asmGenerador->comment("If: ejecutar bloque true");
-        $this->visit($ctx->block());
+
+        $prevEnv = $this->env;
+        $this->env = clone $prevEnv;
         
-        if ($ctx->else() !== null) {
+        $this->visit($ctx->block(0));
+
+        $this->env = $prevEnv;
+
+        if($hasElse){
+
             $this->asmGenerador->b($endLabel);
+            
             $this->asmGenerador->label($elseLabel);
             $this->asmGenerador->comment("If: ejecutar bloque else");
-            $this->visit($ctx->else());
+
+            $prevEnv = $this->env;
+            $this->env = clone $prevEnv;
+            
+            $this->visit($ctx->block(1));
+
+            $this->env = $prevEnv;
+
         }
-        
+
         $this->asmGenerador->label($endLabel);
+
         return Result::buildVacio();
     }
 }
