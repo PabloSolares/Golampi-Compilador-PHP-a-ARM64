@@ -22,11 +22,11 @@ class Symbol {
     public $tamano_int = 4;
     public $tamano_bool = 1;
 
-    public function __construct($tipo= null, $valor = null, $clase = null, $fila = null, $col = null)
+   public function __construct($tipo= null, $clase = null, $valor = null, $fila = null, $col = null)
     {
         $this->tipo = $tipo;
+        $this->clase = $clase; 
         $this->valor = $valor;
-        $this->clase = $clase;
         $this->fila = $fila;
         $this->col = $col;
     }

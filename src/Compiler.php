@@ -21,12 +21,15 @@ class Compiler extends GrammarBaseVisitor  {
     use \App\AST\Sentencias\Transferencia;
     use \App\AST\Sentencias\IfStatement;
     use \App\AST\Sentencias\Variables;
+    use \App\AST\Sentencias\Ciclos;
+
 
 
     public $asmGenerador;
     public $stack;
     public $env;
     public $errors = [];
+    public $loopStack = [];
 
     private $functionGenerator;
     private $functionSymbols = []; 

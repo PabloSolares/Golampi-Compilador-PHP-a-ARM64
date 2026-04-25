@@ -7,6 +7,8 @@ use Context\AndExprContext;
 use Context\OrExprContext;
 use Context\UnaryNotContext;
 use App\Env\Result;
+use Context\BreakStmContext;
+use Context\ContinueStmContext;
 
 trait Booleanas
 {
@@ -75,10 +77,35 @@ trait Booleanas
 
         $this->asmGenerador->cmp($opReg, "xzr");
         $this->asmGenerador->cset("x9", "eq");
+        
 
 
         $this->stack->pushVal("x9");
         return Result::stack(Result::BOOL, $this->stack->getStackOff());
 
+    }
+
+    public function visitBreakStm(BreakStmContext $ctx) {
+        if (empty($this->loopStack)) {
+            $this->addErr("Error Semantico: 'break' fuera de un ciclo.");
+            return Result::buildVacio();
+        }
+
+        $currentLoop = end($this->loopStack);
+        $this->asmGenerador->b($currentLoop['end']);
+        
+        return Result::buildVacio();
+    }
+
+    public function visitContinueStm(ContinueStmContext $ctx) {
+        if (empty($this->loopStack)) {
+            $this->addErr("Error Semantico: 'continue' fuera de un ciclo.");
+            return Result::buildVacio();
+        }
+
+        $currentLoop = end($this->loopStack);
+        $this->asmGenerador->b($currentLoop['continue']);
+        
+        return Result::buildVacio();
     }
 }

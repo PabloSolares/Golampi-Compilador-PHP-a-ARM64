@@ -19,7 +19,7 @@ trait FunctionCall
         $this->visit($ctx->funcAccess());
         
         
-        $this->stack->popVal();
+        $this->stack->popVal("xzr");
         
         return Result::buildVacio();
     }
@@ -28,43 +28,49 @@ trait FunctionCall
     {
         $symbol = $this->env->get($funcName);
         
+        if ($symbol === null) {
+            $this->addErr("Error Semantico: La funcion '$funcName' no ha sido declarada.", $argsCtx);
+            return Result::buildVacio();
+        }
+
         if ($symbol->clase !== Symbol::CLASE_FUNCION) {
             $this->addErr("Error Semantico: '$funcName' no es una funcion.", $argsCtx);
             return Result::buildVacio();
         }
         
-        $args = [];
+        $argCount = 0;
         if ($argsCtx !== null) {
-            $args = $this->visit($argsCtx);
-            if (!is_array($args)) $args = [$args];
+            $this->visit($argsCtx);
+            $argCount = count($argsCtx->expression());
         }
         
-        if (count($symbol->params) !== count($args)) {
+        if ($symbol->paramCount !== $argCount) {
             $this->addErr("Error Semantico: Numero incorrecto de argumentos para '$funcName'.", $argsCtx);
             return Result::buildVacio();
         }
         
         $this->asmGenerador->comment("--- Llamada a funcion: $funcName ---");
         
-        $paramCount = count($args);
-        $this->asmGenerador->subi("sp", "sp", ($paramCount + 1) * 16);
-        
-        $argIndex = 0;
-        foreach ($args as $arg) {
-            $offset = ($paramCount - $argIndex) * 16;
-            $argReg = $this->stack->popValue(); 
-            $this->asmGenerador->str($argReg, "sp", $offset);
-            $argIndex++;
-        }
         
         $funcLabel = "func_" . $funcName;
         $this->asmGenerador->bl($funcLabel);
+
+        if($argCount > 0 ){
+            $this->asmGenerador->comment("Limpiando $argCount argumentos de la pila");
+            for($i = 0; $i < $argCount; $i++){
+                $this->stack->popVal("xzr");
+            }
+            
+        }
+        if($symbol->tipo !== "void"){
+            $this->asmGenerador->mov("x9", "x0");
+            $this->stack->pushVal("x9");
+
+            return Result::stack($symbol->tipo, $this->stack->getStackOff());
+        }
         
-        $this->asmGenerador->mov("x9", "x0");
-        $this->asmGenerador->addi("sp", "sp", ($paramCount + 1) * 16);
         
-        $this->stack->pushValue("x9");
         
-        return Result::stack(Result::INT, $this->stack->getStackOffset());
+        return Result::buildVacio();
     }
 }

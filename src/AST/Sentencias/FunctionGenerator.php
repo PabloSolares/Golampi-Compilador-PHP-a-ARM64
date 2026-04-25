@@ -3,18 +3,18 @@
 namespace App\AST\Sentencias;
 
 use App\Env\Symbol;
+use App\Env\Enviroment;
+
 
 class FunctionGenerator
 {
     private $asmGenerador;
     private $stack;
-    private $env;
     private $compiler;
 
     public function __construct($asmGenerador, $stack, $env, $compiler) {
         $this->asmGenerador = $asmGenerador;
         $this->stack = $stack;
-        $this->env = $env;
         $this->compiler = $compiler;
     }
 
@@ -42,21 +42,29 @@ class FunctionGenerator
         
         $this->asmGenerador->comment("Actualizar FP (Apunta al inicio del frame)");
         $this->asmGenerador->addi("x29", "sp", $frameSize);
+
+        $prevEnv = $this->compiler->env;
+        $localEnv = new Enviroment($prevEnv, Enviroment::TYPE_FUNCTION);
+
+        $this->compiler->env = $localEnv;
         
         foreach ($symbol->params as $param) {
-            $callerOffset = ($paramCount - $param->position) * 16;
+            $callerOffset = ($paramCount - 1 - $param->position) * 16;
             $this->asmGenerador->comment("Cargar parametro: " . $param->id);
             $this->asmGenerador->ldr("x9", "x29", $callerOffset);
             
             $localOffset = ($param->position + 1) * 16;
             $this->asmGenerador->str("x9", "x29", "-$localOffset");
             
-            if ($this->env->hasCurrent($param->id)) {
-                $this->env->get($param->id)->offset = $localOffset;
-            }
+            $paramSymbol = new Symbol($param->tipo, Symbol::CLASE_VARIABLE);
+            $paramSymbol->offset = $localOffset;
+            $localEnv->set($param->id, $paramSymbol);
+
         }
         
         $this->compiler->visit($symbol->valor);
+
+        $this->compiler->env = $prevEnv;
         
         $this->asmGenerador->label($returnLabel);
         

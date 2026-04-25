@@ -6,7 +6,7 @@ use App\Env\Result;
 use Context\Return_stmtContext;
 
 trait Transferencia {
-    public $returnLab = [];
+    public $returnLabels = [];
 
     public function visitReturn_stmt(Return_stmtContext $ctx){
         $result = Result::buildVacio();
@@ -30,9 +30,9 @@ trait Transferencia {
 
         }
 
-        if(isset($this->returnLab[$this->currentFunction])){
-            $returnLab = $this->returnLab[$this->currentFunction];
-            $this->asmGenerador->b($returnLab);
+        if(isset($this->returnLabels[$this->currentFunction])){
+            $returnLabels = $this->returnLabels[$this->currentFunction];
+            $this->asmGenerador->b($returnLabels);
         }
 
         return $result;

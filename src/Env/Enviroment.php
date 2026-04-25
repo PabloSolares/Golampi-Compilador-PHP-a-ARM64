@@ -58,6 +58,16 @@ class Enviroment {
         throw new \Exception("Variable: '" . $key ."' no definida.");
     }
 
+    public function getGlobal()
+    {
+        $env = $this;
+        while ($env->father !== null) {
+            $env = $env->father;
+        }
+        return $env;
+    }
+    
+
     public function assign($key, $value) {    
         if (array_key_exists($key, $this->values)) {
             $this->values[$key] = $value;
