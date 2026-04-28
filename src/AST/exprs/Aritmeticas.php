@@ -63,4 +63,34 @@ trait Aritmeticas
         $this->stack->pushVal("x9");
         return Result::stack(Result::INT, $this->stack->getStackOff());
     }
+
+    public function visitIncrement(\Context\IncrementContext $ctx) {
+        $id = $ctx->ID()->getText();
+        $symbol = $this->env->get($id);
+        $offset = $symbol->offset;
+
+        $this->asmGenerador->comment("--- Incremento: $id++ ---");
+        
+        $this->asmGenerador->ldr("x9", "x29", "-$offset");
+        
+        $this->asmGenerador->add("x9", "x9", 1);
+        
+        $this->asmGenerador->str("x9", "x29", "-$offset");
+
+        return \App\Env\Result::buildVacio();
+    }
+
+    public function visitDecrement(\Context\DecrementContext $ctx) {
+        $id = $ctx->ID()->getText();
+        $symbol = $this->env->get($id);
+        $offset = $symbol->offset;
+
+        $this->asmGenerador->comment("--- Decremento: $id-- ---");
+        
+        $this->asmGenerador->ldr("x9", "x29", "-$offset");
+        $this->asmGenerador->sub("x9", "x9", 1);
+        $this->asmGenerador->str("x9", "x29", "-$offset");
+
+        return \App\Env\Result::buildVacio();
+    }
 }

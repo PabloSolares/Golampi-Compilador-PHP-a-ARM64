@@ -53,13 +53,12 @@ class FunctionGenerator
             $this->asmGenerador->comment("Cargar parametro: " . $param->id);
             $this->asmGenerador->ldr("x9", "x29", $callerOffset);
             
-            $localOffset = ($param->position + 1) * 16;
-            $this->asmGenerador->str("x9", "x29", "-$localOffset");
-            
+            // registramos el param y dejamos que el env calcule el offset
             $paramSymbol = new Symbol($param->tipo, Symbol::CLASE_VARIABLE);
-            $paramSymbol->offset = $localOffset;
             $localEnv->set($param->id, $paramSymbol);
-
+            $localOffset = $localEnv->allocateVarOffset($param->id);
+            
+            $this->asmGenerador->str("x9", "x29", "-$localOffset");
         }
         
         $this->compiler->visit($symbol->valor);

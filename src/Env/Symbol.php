@@ -13,7 +13,8 @@ class Symbol {
     public $col;
     public $valor;
     
-    public $offset = 0;          
+    public $offset = 0;   
+    public $slots = 0;       
     public $params = null;       
     public $paramCount = 0;      
     public $localVarCount = 0;   

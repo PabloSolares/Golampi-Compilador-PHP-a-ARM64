@@ -9,148 +9,77 @@ _start:
     mov x0, #0
     mov x8, #93
     svc #0
-    // ------- Funcion : sumar -------
-    func_sumar:
-    // Reservar espacio para registro de activacion
-    sub sp, sp, #288
-    // Guardar FP y LR al fondo del frame
-    str x29, [sp, #0]
-    str x30, [sp, #16]
-    // Actualizar FP (Apunta al inicio del frame)
-    add x29, sp, #288
-    // Cargar parametro: a
-    ldr x9, [x29, #16]
-    str x9, [x29, #-16]
-    // Cargar parametro: b
-    ldr x9, [x29, #0]
-    str x9, [x29, #-32]
-    // Declaracion de variables: resultado
-    // Lectura de variable: a
-    ldr x9, [x29, #-16]
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // Lectura de variable: b
-    ldr x9, [x29, #-32]
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // Aritmetica (Suma/Resta): +
-    ldr x10, [sp, #0]
-    add sp, sp, #16
-    ldr x11, [sp, #0]
-    add sp, sp, #16
-    add x9, x11, x10
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    ldr x9, [sp, #0]
-    add sp, sp, #16
-    str x9, [x29, #-16]
-    // Lectura de variable: resultado
-    ldr x9, [x29, #-16]
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // Return: guardado 1 valor(es) de retorno
-    ldr x9, [sp, #0]
-    add sp, sp, #16
-    mov x0, x9
-    b func_end_sumar
-    func_end_sumar:
-    // Restaurar LR y FP
-    ldr x30, [sp, #16]
-    ldr x29, [sp, #0]
-    // Restaurar SP
-    add sp, sp, #288
-    // Retornar
-    ret
-    // ------- Fin de funcion: sumar -------
     // ------- Funcion : main -------
     func_main:
     // Reservar espacio para registro de activacion
-    sub sp, sp, #352
+    sub sp, sp, #384
     // Guardar FP y LR al fondo del frame
     str x29, [sp, #0]
     str x30, [sp, #16]
     // Actualizar FP (Apunta al inicio del frame)
-    add x29, sp, #352
-    // Declaracion de variables: numero1
-    // Cargando  INT: 100
-    mov x9, #100
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    ldr x9, [sp, #0]
-    add sp, sp, #16
+    add x29, sp, #384
+    // Declaracion de variables: arr
+    mov x9, 0
     str x9, [x29, #-16]
-    // Declaracion de variables: numero2
-    // Cargando  INT: 50
-    mov x9, #50
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    ldr x9, [sp, #0]
-    add sp, sp, #16
     str x9, [x29, #-32]
-    // Declaracion de variables: x
-    // Lectura de variable: numero1
-    ldr x9, [x29, #-16]
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // Lectura de variable: numero2
-    ldr x9, [x29, #-32]
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // --- Llamada a funcion: sumar ---
-    bl func_sumar
-    // Limpiando 2 argumentos de la pila
-    ldr xzr, [sp, #0]
-    add sp, sp, #16
-    ldr xzr, [sp, #0]
-    add sp, sp, #16
-    mov x9, x0
+    str x9, [x29, #-48]
+    str x9, [x29, #-64]
+    str x9, [x29, #-80]
+    // Declaracion de variables: suma
+    // Cargando  INT: 0
+    mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x9, [sp, #0]
     add sp, sp, #16
-    str x9, [x29, #-48]
-    // Lectura de variable: x
-    ldr x9, [x29, #-48]
+    str x9, [x29, #-96]
+    // Declaracion de variables: i
+    // Cargando  INT: 0
+    mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Imprimiendo valor
-    ldr x0, [sp, #0]
+    ldr x9, [sp, #0]
     add sp, sp, #16
-    bl itoa
-    mov x2, x1
-    mov x1, x0
-    mov x0, #1
-    mov x8, #64
-    svc #0
-    // Salto de línea
-    mov x0, #1
-    ldr x1, =newline
-    mov x2, #1
-    mov x8, #64
-    svc #0
-    // Declaracion de variables: y
-    // Cargando  INT: 10
-    mov x9, #10
+    str x9, [x29, #-112]
+    // --- INICIO FOR ---
+    // Cargando  INT: 0
+    mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 10
-    mov x9, #10
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // --- Llamada a funcion: sumar ---
-    bl func_sumar
-    // Limpiando 2 argumentos de la pila
-    ldr xzr, [sp, #0]
+    // Reasignacion de variable: i
+    ldr x9, [sp, #0]
     add sp, sp, #16
-    ldr xzr, [sp, #0]
-    add sp, sp, #16
-    mov x9, x0
+    str x9, [x29, #-112]
+    for_start_0:
+    // Lectura de variable: i
+    ldr x9, [x29, #-112]
     sub sp, sp, #16
     str x9, [sp, #0]
     // Cargando  INT: 5
     mov x9, #5
     sub sp, sp, #16
     str x9, [sp, #0]
+    // Relacional: <
+    ldr x10, [sp, #0]
+    add sp, sp, #16
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    cmp x11, x10
+    cset x9, lt
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    cmp x9, xzr
+    b.eq for_end_2
+    // Lectura de variable: i
+    ldr x9, [x29, #-112]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Cargando  INT: 1
+    mov x9, #1
+    sub sp, sp, #16
+    str x9, [sp, #0]
     // Aritmetica (Suma/Resta): +
     ldr x10, [sp, #0]
     add sp, sp, #16
@@ -159,11 +88,176 @@ _start:
     add x9, x11, x10
     sub sp, sp, #16
     str x9, [sp, #0]
+    // Cargando  INT: 10
+    mov x9, #10
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Aritmetica (Mul/Div/Mod): *
+    ldr x10, [sp, #0]
+    add sp, sp, #16
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mul x9, x11, x10
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // --- ASIGNACION A ARREGLO: arr ---
+    ldr x10, [sp, #0]
+    add sp, sp, #16
+    // Lectura de variable: i
+    ldr x9, [x29, #-112]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x12, 16
+    mov x13, 16
+    mul x14, x11, x13
+    add x15, x12, x14
+    sub x16, x29, x15
+    str x10, [x16, #0]
+    for_update_1:
+    // --- Incremento: i++ ---
+    ldr x9, [x29, #-112]
+    add x9, x9, 1
+    str x9, [x29, #-112]
+    b for_start_0
+    for_end_2:
+    // --- FIN FOR ---
+    // Declaracion de variables: j
+    // Cargando  INT: 0
+    mov x9, #0
+    sub sp, sp, #16
+    str x9, [sp, #0]
     ldr x9, [sp, #0]
     add sp, sp, #16
-    str x9, [x29, #-64]
-    // Lectura de variable: y
-    ldr x9, [x29, #-64]
+    str x9, [x29, #-128]
+    // --- INICIO FOR ---
+    // Cargando  INT: 0
+    mov x9, #0
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Reasignacion de variable: j
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    str x9, [x29, #-128]
+    for_start_3:
+    // Lectura de variable: j
+    ldr x9, [x29, #-128]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Cargando  INT: 5
+    mov x9, #5
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Relacional: <
+    ldr x10, [sp, #0]
+    add sp, sp, #16
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    cmp x11, x10
+    cset x9, lt
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    cmp x9, xzr
+    b.eq for_end_5
+    // Declaracion de variables: temporal
+    // --- LECTURA DE ARREGLO: arr ---
+    // Lectura de variable: j
+    ldr x9, [x29, #-128]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x12, 16
+    mov x13, 16
+    mul x14, x11, x13
+    add x15, x12, x14
+    sub x16, x29, x15
+    ldr x9, [x16, #0]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    str x9, [x29, #-144]
+    // Lectura de variable: temporal
+    ldr x9, [x29, #-144]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Cargando  INT: 25
+    mov x9, #25
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Relacional: >
+    ldr x10, [sp, #0]
+    add sp, sp, #16
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    cmp x11, x10
+    cset x9, gt
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    // If: evaluar condicion
+    cmp x9, xzr
+    b.eq if_else_7
+    // If: ejecutar bloque true
+    // Lectura de variable: suma
+    ldr x9, [x29, #-96]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Lectura de variable: temporal
+    ldr x9, [x29, #-144]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Aritmetica (Suma/Resta): +
+    ldr x10, [sp, #0]
+    add sp, sp, #16
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    add x9, x11, x10
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Reasignacion de variable: suma
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    str x9, [x29, #-96]
+    b if_end_6
+    if_else_7:
+    // If: ejecutar bloque else
+    // Lectura de variable: suma
+    ldr x9, [x29, #-96]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Lectura de variable: temporal
+    ldr x9, [x29, #-144]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Aritmetica (Suma/Resta): -
+    ldr x10, [sp, #0]
+    add sp, sp, #16
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    sub x9, x11, x10
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Reasignacion de variable: suma
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    str x9, [x29, #-96]
+    if_end_6:
+    for_update_4:
+    // --- Incremento: j++ ---
+    ldr x9, [x29, #-128]
+    add x9, x9, 1
+    str x9, [x29, #-128]
+    b for_start_3
+    for_end_5:
+    // --- FIN FOR ---
+    // Lectura de variable: suma
+    ldr x9, [x29, #-96]
     sub sp, sp, #16
     str x9, [sp, #0]
     // Imprimiendo valor
@@ -186,7 +280,7 @@ _start:
     ldr x30, [sp, #16]
     ldr x29, [sp, #0]
     // Restaurar SP
-    add sp, sp, #352
+    add sp, sp, #384
     // Retornar
     ret
     // ------- Fin de funcion: main -------

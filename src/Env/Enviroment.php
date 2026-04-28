@@ -27,12 +27,17 @@ class Enviroment {
     }
 
 
-    public function allocateVarOffset($key) {
-        $this->currentOffset += 16; 
+    public function allocateVarOffset($key, $slots = 1) {
+        $startOffset = $this->currentOffset + 16;
+        
+        $this->currentOffset += (16 * $slots); 
+        
         if (isset($this->values[$key])) {
-            $this->values[$key]->offset = $this->currentOffset;
+            $this->values[$key]->offset = $startOffset;
+            $this->values[$key]->slots = $slots; 
         }
-        return $this->currentOffset;
+        
+        return $startOffset;
     }
 
     public function getVarOffset($key) {

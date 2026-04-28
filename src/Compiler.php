@@ -16,12 +16,14 @@ class Compiler extends GrammarBaseVisitor  {
     use \App\AST\exprs\Booleanas;
     use \App\AST\exprs\Primitivos;
     use \App\AST\exprs\FunctionCall;
+    use \App\AST\exprs\ArrayOperations;
     use \App\AST\Sentencias\PrintF;
     use \App\AST\Sentencias\FunctionDeclaracion;
     use \App\AST\Sentencias\Transferencia;
     use \App\AST\Sentencias\IfStatement;
     use \App\AST\Sentencias\Variables;
     use \App\AST\Sentencias\Ciclos;
+    use \App\AST\Sentencias\SwitchStatement;
 
 
 

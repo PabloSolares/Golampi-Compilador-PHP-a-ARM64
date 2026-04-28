@@ -3,10 +3,10 @@
 namespace App\Env;
 
 class Result {
-    const INT = "Int";
-    const FLOAT = "Float";
-    const BOOL = "Bool";
-    const STRING = "String";
+    const INT = "int";
+    const FLOAT = "float";
+    const BOOL = "bool";
+    const STRING = "string";
     const NULO = "null";
 
 
