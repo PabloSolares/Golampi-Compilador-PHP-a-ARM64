@@ -17,14 +17,12 @@ trait FunctionDeclaracion
         $returnType = "void";
         $resCtx = $ctx->funcParRet()->result();
         if ($resCtx !== null) {
-            // si tiene varios tipos
             if (count($resCtx->type()) > 1) {
                 $returnType = [];
                 foreach ($resCtx->type() as $t) {
                     $returnType[] = $t->getText();
                 }
             } else {
-                // si solo tiene un tipo de retorno
                 $returnType = $resCtx->type(0)->getText();
             }
         }
@@ -33,7 +31,6 @@ trait FunctionDeclaracion
         $paramIndex = 0;
         $paramCtx = $ctx->funcParRet()->parameters();
         
-        // obtenemos los parametros si es que existen
         if ($paramCtx !== null) {
             foreach ($paramCtx->paramDcl() as $paramDcl) {
                 $tipo = $paramDcl->type()->getText();
@@ -44,10 +41,8 @@ trait FunctionDeclaracion
         }
 
         $block = $ctx->block();
-        
         $paramCount = count($params);
         
-        // contamos las variables que existen en esa funcion
         $counter = new LocalVarCounter();
         $counter->visit($block);
         $localVarCount = $counter->count;

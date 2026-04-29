@@ -24,6 +24,8 @@ class Compiler extends GrammarBaseVisitor  {
     use \App\AST\Sentencias\Variables;
     use \App\AST\Sentencias\Ciclos;
     use \App\AST\Sentencias\SwitchStatement;
+    use \App\AST\exprs\Embebidas;
+
 
 
 
@@ -99,4 +101,6 @@ class Compiler extends GrammarBaseVisitor  {
         }
         return Result::buildVacio();
     }
+
+    
 }

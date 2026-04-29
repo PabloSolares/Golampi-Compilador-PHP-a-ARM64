@@ -6,7 +6,6 @@ class Enviroment {
     private $father;
     private $values;
     
-    // --- NUEVO: Control de memoria en la pila (Stack) de ARM64 ---
     private $currentOffset = 0; 
 
     const TYPE_GLOBAL = 'GLOBAL';

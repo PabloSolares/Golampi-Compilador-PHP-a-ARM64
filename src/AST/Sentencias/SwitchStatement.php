@@ -82,7 +82,7 @@ trait SwitchStatement {
         // Sacamos la etiqueta de break
         array_pop($this->loopStack);
 
-        // Etiqueta de Fin de Switch
+        // label del fin del switch
         $this->asmGenerador->label($endLabel);
 
         $this->asmGenerador->comment("--- FIN SWITCH ---");

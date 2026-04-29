@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $filename = "salida";
             file_put_contents("$filename.s", $asmCode);
 
-            $compileCmd = "aarch64-linux-gnu-gcc -nostdlib -static -o $filename $filename.s 2>&1";
+            $compileCmd = "aarch64-linux-gnu-gcc  -static -o $filename $filename.s 2>&1";
             $compileOutput = shell_exec($compileCmd);
 
             if($compileOutput && !str_contains(strtolower($compileOutput), 'warning')){

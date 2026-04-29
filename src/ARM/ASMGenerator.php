@@ -36,6 +36,8 @@ class ASMGenerator {
     private $r;
     private $labelCounter = 0;
     private $functionLabels = [];
+    private $strings = [];
+    private $stringCounter = 0;
 
     public function __construct() {
         $this->r = include __DIR__ . "/Constants.php";
@@ -45,6 +47,13 @@ class ASMGenerator {
     public function generateLabel($prefix = "label"){
         $label = $prefix . "_" .  $this->labelCounter;
         $this->labelCounter++;
+        return $label;
+    }
+
+    public function addString($text){
+        $label = "msg_" . $this->stringCounter++;
+
+        $this->strings[$label] = trim($text, '"'); // eliminamos "
         return $label;
     }
 
@@ -94,11 +103,43 @@ class ASMGenerator {
     }
 
     public function str($rs, $base, $offset=0) {
-        $this->instrucciones[] = new Instruction("str", $rs, "[".$base.", #".$offset."]");
+        $val = intval(str_replace('#', '', $offset));
+
+        if ($val < -256 || $val > 255) {
+            $absVal = abs($val);
+            $this->instrucciones[] = new Instruction("mov", "x16", "#" . $absVal);
+            if ($val < 0) {
+                $this->instrucciones[] = new Instruction("sub", "x16", $base, "x16");
+            } else {
+                $this->instrucciones[] = new Instruction("add", "x16", $base, "x16");
+            }
+            // se guarda la direccion calculada
+            $this->instrucciones[] = new Instruction("str", $rs, "[x16]");
+        } else {
+            // si esta dentro del rango 
+            $this->instrucciones[] = new Instruction("str", $rs, "[".$base.", #".$val."]");
+        }
     }
 
     public function ldr($rd, $base, $offset=0) {
-        $this->instrucciones[] = new Instruction("ldr", $rd, "[".$base.", #".$offset."]");
+        $val = intval(str_replace('#', '', $offset));
+
+        if ($val < -256 || $val > 255) {
+            $absVal = abs($val);
+            $this->instrucciones[] = new Instruction("mov", "x16", "#" . $absVal);
+            if ($val < 0) {
+                $this->instrucciones[] = new Instruction("sub", "x16", $base, "x16");
+            } else {
+                $this->instrucciones[] = new Instruction("add", "x16", $base, "x16");
+            }
+            // se carga la direccion calculada
+
+            $this->instrucciones[] = new Instruction("ldr", $rd, "[x16]");
+        } else {            
+            // si esta dentro del rango 
+
+            $this->instrucciones[] = new Instruction("ldr", $rd, "[".$base.", #".$val."]");
+        }
     }
 
     public function ldrl($rd, $label) {
@@ -181,6 +222,12 @@ class ASMGenerator {
         $this->instrucciones[] = new Instruction("svc", "#0");
     }
 
+    public function printPrintf($formatLabel){
+        $this->ldrl("x0", $formatLabel);
+        $this->bl("printf");
+
+    }
+
     public function printNewLine() {
         $this->comment("Salto de línea");
         $this->li($this->r["A0"], 1);
@@ -204,9 +251,10 @@ class ASMGenerator {
 
     public function endProgram() {
         $this->comment("Fin del programa");
+
         $this->li($this->r["A0"], 0);
-        $this->li($this->r["SYS"], 93);
-        $this->syscall();
+        $this->instrucciones[] = new Instruction("ldp", "x29", "x30", "[sp], 16");
+        $this->ret();
     }
 
     public function comment($text) {
@@ -249,7 +297,20 @@ class ASMGenerator {
 
     public function rodata(){
         $rodata = ".section .rodata\n";
-        $rodata .= "newline: .asciz \"\\n\"\n";
+        $rodata .= "fmt_int: .asciz \"%d\"\n";
+        $rodata .= "fmt_float: .asciz \"%f\"\n";
+        $rodata .= "fmt_str: .asciz \"%s\"\n";
+        $rodata .= "fmt_char: .asciz \"%c\"\n";
+        
+        $rodata .= "fmt_space: .asciz \" \"\n";
+        $rodata .= "fmt_newline: .asciz \"\\n\"\n";
+        $rodata .= "fmt_nil: .asciz \"<nil>\"\n";
+
+
+        foreach ($this->strings as $label => $text) {
+            $rodata .= "$label: .asciz \"$text\"\n";
+        }
+
         return $rodata;
     }
 
@@ -257,18 +318,93 @@ class ASMGenerator {
         $this->instrucciones = array_merge($this->instrucciones, $instructions);
     }
 
-    public function toString() {
-        $out = ".global _start\n";
-        $out .= ".section .bss\n";
-        $out .= "buffer: .skip 32\n";
-        $out .= ".section .text\n";
-        $out .= "_start:\n";
+    public function getConcatRoutine() {
+        return <<<ASM
+        .section .bss
+        string_heap: .skip 8192      // 8KB de memoria para nuevas cadenas
+        string_heap_ptr: .quad 0     // Puntero a la memoria libre
 
+        .section .text
+        // Funciones de inicializacion y concatenacion
+        init_heap:
+            ldr x0, =string_heap
+            ldr x1, =string_heap_ptr
+            str x0, [x1]
+            ret
+
+        concat_strings:
+            ldr x2, =string_heap_ptr
+            ldr x3, [x2]             
+            mov x4, x3               
+        copy_str1:
+            ldrb w5, [x0], #1        
+            cbz w5, copy_str2        
+            strb w5, [x3], #1        
+            b copy_str1
+        copy_str2:
+            ldrb w5, [x1], #1        
+            cbz w5, done_concat      
+            strb w5, [x3], #1        
+            b copy_str2
+        done_concat:
+            strb wzr, [x3], #1       
+            str x3, [x2]             
+            mov x0, x4               
+            ret
+
+        // len
+        string_length:
+            // Parametro: x0 = puntero al string. Retorno: x0 = longitud
+            mov x1, 0                
+        count_loop:
+            ldrb w2, [x0], #1        
+            cbz w2, done_length      
+            add x1, x1, 1            
+            b count_loop
+        done_length:
+            mov x0, x1               
+            ret
+
+        // substr
+        substring:
+            // x0 = str_ptr, x1 = start, x2 = length. Retorno: x0 = nuevo_str_ptr
+            ldr x3, =string_heap_ptr
+            ldr x4, [x3]          
+            mov x5, x4            // guardamos inicio para retornar
+
+            add x0, x0, x1        // avanza el puntero fuente hasta 'start'
+
+        copy_substr:
+            cbz x2, done_substr   // Si length == 0 se termina
+            ldrb w6, [x0], #1     // Leemos 1 byte
+            cbz w6, done_substr   // Si encontramos '\0' antes de tiempo se termina 
+            strb w6, [x4], #1     // Guardamos en el heap
+            sub x2, x2, 1         // length--
+            b copy_substr
+
+        done_substr:
+            strb wzr, [x4], #1    // Ponemos '\0' al final
+            str x4, [x3]          // Actualizamos puntero del heap
+            mov x0, x5            // Retornamos la nueva cadena
+            ret
+        ASM;
+            }
+
+   
+    public function toString() {
+        $out = ".global main\n";
+        $out .= ".section .text\n";
+        $out .= "main:\n";
+        $out .= "   stp x29, x30, [sp, -16]!\n";
+        $out .= "   mov x29, sp\n";
+        $out .= "   bl init_heap\n";
         foreach ($this->instrucciones as $inst) {
             $out .= "    ".$inst."\n";
         }
-        $out .= $this->itoa();
+
+        
         $out .= $this->rodata();
+        $out .= $this->getConcatRoutine();
         return $out;
     }
 }

@@ -14,11 +14,12 @@ class Symbol {
     public $valor;
     
     public $offset = 0;   
-    public $slots = 0;       
+    public $slots = 1;       
     public $params = null;       
     public $paramCount = 0;      
     public $localVarCount = 0;   
     public $totalSlots = 0;      
+    public $dimensiones = [];
 
     public $tamano_int = 4;
     public $tamano_bool = 1;

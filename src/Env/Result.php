@@ -8,13 +8,15 @@ class Result {
     const BOOL = "bool";
     const STRING = "string";
     const NULO = "null";
-
+    const CHAR = "char";
 
     public $tipo;
     public $valor;
     public $onStack;
     public $offset;
     public $isReturn = false;
+    public $slots = 1;         
+    public $dimensiones = [];
 
 
     public function __construct($tipo, $valor = null, $onStack = false, $offset = 0)

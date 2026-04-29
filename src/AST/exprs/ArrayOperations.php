@@ -2,63 +2,106 @@
 namespace App\AST\exprs;
 
 use App\Env\Result;
-use Context\ArrayAccessExprContext;
-use Context\AsingArrayContext;
 
 trait ArrayOperations {
-    public function visitArrayAccessExpr(ArrayAccessExprContext $ctx){
-        $arrayAccessCtx = $ctx->arrayAccess();
-
-        $id = $arrayAccessCtx->ID()->getText();
-        $symbol = $this->env->get($id);
-
-        $this->asmGenerador->comment("--- LECTURA DE ARREGLO: $id ---");
-
-        $this->visit($arrayAccessCtx->expression(0));
-        $indexReg = $this->stack->popVal("x11");
-
-        $this->asmGenerador->mov("x12", $symbol->offset); // x12 = Offset Base
-        $this->asmGenerador->mov("x13", 16);              // x13 = 16 bytes por bloque
-        $this->asmGenerador->mul("x14", $indexReg, "x13"); // x14 = (Index * 16)
-        $this->asmGenerador->add("x15", "x12", "x14");  // x15 = Offset Total
-
-        $this->asmGenerador->sub("x16", "x29", "x15");
-
-        $this->asmGenerador->ldr("x9", "x16", 0);
+    
+    public function visitArrayLiteral(\Context\ArrayLiteralContext $ctx) {
+        $this->asmGenerador->comment("--- EVALUANDO ARREGLO LITERAL ---");
         
-        $this->stack->pushVal("x9");
+        $dimensiones = [];
+        $currArrayType = $ctx->arrayType();
+        
+        while ($currArrayType !== null) {
+            if ($currArrayType->expression() !== null) {
+                $dimensiones[] = intval($currArrayType->expression()->getText());
+            }
+            $innerType = $currArrayType->type();
+            if ($innerType !== null && $innerType instanceof \Context\TypeArrayDefContext) {
+                $currArrayType = $innerType->arrayType();
+            } else {
+                $currArrayType = null;
+            }
+        }
+        
+        $valores = [];
+        $this->recolectarValores($ctx->arrayContent(), $valores);
+        
+        $innerType = Result::INT; 
+        foreach ($valores as $expr) {
+            $innerRes = $this->visit($expr); 
+            $innerType = $innerRes->tipo; 
+        }
+        
+        $slots = count($valores);
+        if (empty($dimensiones)) $dimensiones = [$slots]; 
+        
+        $res = Result::buildVacio();
+        $res->tipo = $innerType; 
+        $res->slots = $slots;
+        $res->dimensiones = $dimensiones;
+        return $res;
+    }
 
+    private function recolectarValores($node, &$values) {
+        if ($node instanceof \Context\ExpressionContext) {
+            $values[] = $node;
+            return;
+        }
+        if (is_object($node) && method_exists($node, 'getChildCount')) {
+            $hijos = $node->getChildCount();
+            for ($i = 0; $i < $hijos; $i++) {
+                $this->recolectarValores($node->getChild($i), $values);
+            }
+        }
+    }
+
+    public function visitArrayAccess(\Context\ArrayAccessContext $ctx) {
+        $idName = $ctx->ID()->getText();
+        $symbol = $this->env->get($idName);
+        
+        if ($symbol === null) {
+            $this->addErr("Error Semantico: Arreglo '$idName' no declarado.", $ctx);
+            return Result::buildVacio();
+        }
+
+        $this->asmGenerador->comment("--- LECTURA DE ARREGLO: $idName ---");
+        $this->calculateArrayOffset($symbol, $ctx);
+        
+        $this->asmGenerador->ldr("x9", "x16", 0);
+        $this->stack->pushVal("x9");
+        
         return Result::stack($symbol->tipo, $this->stack->getStackOff());
     }
 
-    public function visitAsingArray(AsingArrayContext $ctx) {
-        $id = $ctx->ID()->getText();
-        $symbol = $this->env->get($id);
-
-        $this->asmGenerador->comment("--- ASIGNACION A ARREGLO: $id ---");
-
-        // evaluar el valor a guardar
-        $this->visit($ctx->expression());
-        $valueReg = $this->stack->popVal("x10");
-
-        // evaluar el indice
-        $this->visit($ctx->arrayDimension()->expression(0));
-        $indexReg = $this->stack->popVal("x11");
+    public function calculateArrayOffset($symbol, $arrayAccessCtx) {
+        $exprs = $arrayAccessCtx->expression();
+        $dims = isset($symbol->dimensiones) ? $symbol->dimensiones : [];
         
-        //calcular offset
+        if (count($exprs) == 1) {
+            $this->visit($exprs[0]);
+            $this->stack->popVal("x11"); 
+            $this->asmGenerador->mov("x14", "x11"); 
+        } else {
+            $this->asmGenerador->mov("x14", "xzr");
+            for ($i = 0; $i < count($exprs); $i++) {
+                $this->visit($exprs[$i]);
+                $this->stack->popVal("x11"); 
+                
+                if ($i > 0) {
+                    $dimValue = isset($dims[$i]) ? $dims[$i] : 1;
+                    $this->asmGenerador->mov("x12", $dimValue);
+                    $this->asmGenerador->mul("x14", "x14", "x12");
+                    $this->asmGenerador->add("x14", "x14", "x11");
+                } else {
+                    $this->asmGenerador->mov("x14", "x11");
+                }
+            }
+        }
+        
         $this->asmGenerador->mov("x12", $symbol->offset);
         $this->asmGenerador->mov("x13", 16);
-        $this->asmGenerador->mul("x14", $indexReg, "x13");
-        $this->asmGenerador->add("x15", "x12", "x14");
-
-        $this->asmGenerador->sub("x16", "x29", "x15");
-
-        // Guardar el valor en esa direccion
-        $this->asmGenerador->str($valueReg, "x16", 0);
-
-        return Result::buildVacio();
+        $this->asmGenerador->mul("x15", "x14", "x13");
+        $this->asmGenerador->sub("x16", "x12", "x15");
+        $this->asmGenerador->sub("x16", "x29", "x16"); 
     }
-
-    
-
 }

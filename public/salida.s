@@ -1,317 +1,872 @@
-.global _start
-.section .bss
-buffer: .skip 32
+.global main
 .section .text
-_start:
+main:
+   stp x29, x30, [sp, -16]!
+   mov x29, sp
+   bl init_heap
     // --- PUNTO DE ENTRADA -----
     bl func_main
     // Fin del programa
     mov x0, #0
-    mov x8, #93
-    svc #0
+    ldp x29, x30, [sp], 16
+    ret
     // ------- Funcion : main -------
     func_main:
     // Reservar espacio para registro de activacion
-    sub sp, sp, #384
+    sub sp, sp, #480
     // Guardar FP y LR al fondo del frame
     str x29, [sp, #0]
     str x30, [sp, #16]
     // Actualizar FP (Apunta al inicio del frame)
-    add x29, sp, #384
-    // Declaracion de variables: arr
-    mov x9, 0
+    add x29, sp, #480
+    // --- IMPRESION ---
+    // Cargando STRING: "=== INICIO DE CALIFICACION: ARREGLOS ==="
+    ldr x9, =msg_0
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_str
+    bl printf
+    ldr x0, =fmt_newline
+    bl printf
+    // --- IMPRESION ---
+    // Cargando STRING: "\n--- 5.1 DECLARACION 1D INICIALIZADA Y NO INICIALIZADA ---"
+    ldr x9, =msg_1
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_str
+    bl printf
+    ldr x0, =fmt_newline
+    bl printf
+    // Declaracion de variables: arregloNoInit
+    mov x9, xzr
+    str x9, [x29, #0]
+    str x9, [x29, #0]
+    str x9, [x29, #0]
+    str x9, [x29, #0]
     str x9, [x29, #-16]
-    str x9, [x29, #-32]
-    str x9, [x29, #-48]
-    str x9, [x29, #-64]
-    str x9, [x29, #-80]
-    // Declaracion de variables: suma
-    // Cargando  INT: 0
-    mov x9, #0
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    ldr x9, [sp, #0]
-    add sp, sp, #16
-    str x9, [x29, #-96]
-    // Declaracion de variables: i
-    // Cargando  INT: 0
-    mov x9, #0
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    ldr x9, [sp, #0]
-    add sp, sp, #16
-    str x9, [x29, #-112]
-    // --- INICIO FOR ---
-    // Cargando  INT: 0
-    mov x9, #0
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // Reasignacion de variable: i
-    ldr x9, [sp, #0]
-    add sp, sp, #16
-    str x9, [x29, #-112]
-    for_start_0:
-    // Lectura de variable: i
-    ldr x9, [x29, #-112]
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // Cargando  INT: 5
-    mov x9, #5
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // Relacional: <
-    ldr x10, [sp, #0]
-    add sp, sp, #16
-    ldr x11, [sp, #0]
-    add sp, sp, #16
-    cmp x11, x10
-    cset x9, lt
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    ldr x9, [sp, #0]
-    add sp, sp, #16
-    cmp x9, xzr
-    b.eq for_end_2
-    // Lectura de variable: i
-    ldr x9, [x29, #-112]
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // Cargando  INT: 1
-    mov x9, #1
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // Aritmetica (Suma/Resta): +
-    ldr x10, [sp, #0]
-    add sp, sp, #16
-    ldr x11, [sp, #0]
-    add sp, sp, #16
-    add x9, x11, x10
-    sub sp, sp, #16
-    str x9, [sp, #0]
+    // Declaracion corta: arregloInit
+    // --- EVALUANDO ARREGLO LITERAL ---
     // Cargando  INT: 10
     mov x9, #10
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Aritmetica (Mul/Div/Mod): *
-    ldr x10, [sp, #0]
-    add sp, sp, #16
-    ldr x11, [sp, #0]
-    add sp, sp, #16
-    mul x9, x11, x10
+    // Cargando  INT: 20
+    mov x9, #20
     sub sp, sp, #16
     str x9, [sp, #0]
-    // --- ASIGNACION A ARREGLO: arr ---
-    ldr x10, [sp, #0]
-    add sp, sp, #16
-    // Lectura de variable: i
-    ldr x9, [x29, #-112]
+    // Cargando  INT: 30
+    mov x9, #30
     sub sp, sp, #16
     str x9, [sp, #0]
-    ldr x11, [sp, #0]
+    // Cargando  INT: 40
+    mov x9, #40
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Cargando  INT: 50
+    mov x9, #50
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x9, [sp, #0]
     add sp, sp, #16
-    mov x12, 16
-    mov x13, 16
-    mul x14, x11, x13
-    add x15, x12, x14
-    sub x16, x29, x15
-    str x10, [x16, #0]
-    for_update_1:
-    // --- Incremento: i++ ---
-    ldr x9, [x29, #-112]
-    add x9, x9, 1
-    str x9, [x29, #-112]
-    b for_start_0
-    for_end_2:
-    // --- FIN FOR ---
-    // Declaracion de variables: j
+    str x9, [x29, #-32]
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    str x9, [x29, #-48]
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    str x9, [x29, #-64]
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    str x9, [x29, #-80]
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    str x9, [x29, #-96]
+    // --- IMPRESION ---
+    // Cargando STRING: "No inicializado pos0:"
+    ldr x9, =msg_2
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_str
+    bl printf
+    ldr x0, =fmt_space
+    bl printf
+    // --- LECTURA DE ARREGLO: arregloNoInit ---
     // Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
-    ldr x9, [sp, #0]
-    add sp, sp, #16
-    str x9, [x29, #-128]
-    // --- INICIO FOR ---
-    // Cargando  INT: 0
-    mov x9, #0
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // Reasignacion de variable: j
-    ldr x9, [sp, #0]
-    add sp, sp, #16
-    str x9, [x29, #-128]
-    for_start_3:
-    // Lectura de variable: j
-    ldr x9, [x29, #-128]
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // Cargando  INT: 5
-    mov x9, #5
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // Relacional: <
-    ldr x10, [sp, #0]
-    add sp, sp, #16
     ldr x11, [sp, #0]
     add sp, sp, #16
-    cmp x11, x10
-    cset x9, lt
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    ldr x9, [sp, #0]
-    add sp, sp, #16
-    cmp x9, xzr
-    b.eq for_end_5
-    // Declaracion de variables: temporal
-    // --- LECTURA DE ARREGLO: arr ---
-    // Lectura de variable: j
-    ldr x9, [x29, #-128]
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    ldr x11, [sp, #0]
-    add sp, sp, #16
+    mov x14, x11
     mov x12, 16
     mov x13, 16
-    mul x14, x11, x13
-    add x15, x12, x14
-    sub x16, x29, x15
+    mul x15, x14, x13
+    sub x16, x12, x15
+    sub x16, x29, x16
     ldr x9, [x16, #0]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_int
+    bl printf
+    ldr x0, =fmt_newline
+    bl printf
+    // --- IMPRESION ---
+    // Cargando STRING: "Inicializado pos2:"
+    ldr x9, =msg_3
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_str
+    bl printf
+    ldr x0, =fmt_space
+    bl printf
+    // --- LECTURA DE ARREGLO: arregloInit ---
+    // Cargando  INT: 2
+    mov x9, #2
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x14, x11
+    mov x12, 96
+    mov x13, 16
+    mul x15, x14, x13
+    sub x16, x12, x15
+    sub x16, x29, x16
+    ldr x9, [x16, #0]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_int
+    bl printf
+    ldr x0, =fmt_newline
+    bl printf
+    // --- IMPRESION ---
+    // Cargando STRING: "\n--- 5.2 ARREGLOS DE TIPOS ESTATICOS ---"
+    ldr x9, =msg_4
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_str
+    bl printf
+    ldr x0, =fmt_newline
+    bl printf
+    // Declaracion corta: arrFloat
+    // --- EVALUANDO ARREGLO LITERAL ---
+    // Cargando FLOAT: 1.1
+    ldr w9, =1066192077
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Cargando FLOAT: 2.2
+    ldr w9, =1074580685
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Cargando FLOAT: 3.3
+    ldr w9, =1079194419
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x9, [sp, #0]
     add sp, sp, #16
     str x9, [x29, #-144]
-    // Lectura de variable: temporal
-    ldr x9, [x29, #-144]
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    str x9, [x29, #-160]
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    str x9, [x29, #-176]
+    // Declaracion corta: arrBool
+    // --- EVALUANDO ARREGLO LITERAL ---
+    // Cargando TRUE
+    mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 25
-    mov x9, #25
+    // Cargando FALSE
+    mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Relacional: >
-    ldr x10, [sp, #0]
-    add sp, sp, #16
-    ldr x11, [sp, #0]
-    add sp, sp, #16
-    cmp x11, x10
-    cset x9, gt
+    // Cargando TRUE
+    mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x9, [sp, #0]
     add sp, sp, #16
-    // If: evaluar condicion
-    cmp x9, xzr
-    b.eq if_else_7
-    // If: ejecutar bloque true
-    // Lectura de variable: suma
-    ldr x9, [x29, #-96]
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // Lectura de variable: temporal
-    ldr x9, [x29, #-144]
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // Aritmetica (Suma/Resta): +
-    ldr x10, [sp, #0]
-    add sp, sp, #16
-    ldr x11, [sp, #0]
-    add sp, sp, #16
-    add x9, x11, x10
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // Reasignacion de variable: suma
+    str x9, [x29, #-192]
     ldr x9, [sp, #0]
     add sp, sp, #16
-    str x9, [x29, #-96]
-    b if_end_6
-    if_else_7:
-    // If: ejecutar bloque else
-    // Lectura de variable: suma
-    ldr x9, [x29, #-96]
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // Lectura de variable: temporal
-    ldr x9, [x29, #-144]
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // Aritmetica (Suma/Resta): -
-    ldr x10, [sp, #0]
-    add sp, sp, #16
-    ldr x11, [sp, #0]
-    add sp, sp, #16
-    sub x9, x11, x10
-    sub sp, sp, #16
-    str x9, [sp, #0]
-    // Reasignacion de variable: suma
+    str x9, [x29, #-208]
     ldr x9, [sp, #0]
     add sp, sp, #16
-    str x9, [x29, #-96]
-    if_end_6:
-    for_update_4:
-    // --- Incremento: j++ ---
-    ldr x9, [x29, #-128]
-    add x9, x9, 1
-    str x9, [x29, #-128]
-    b for_start_3
-    for_end_5:
-    // --- FIN FOR ---
-    // Lectura de variable: suma
-    ldr x9, [x29, #-96]
+    str x9, [x29, #-224]
+    // Declaracion corta: arrRune
+    // --- EVALUANDO ARREGLO LITERAL ---
+    // Cargando CHAR: 'A' (ASCII: 65)
+    mov x9, #65
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Imprimiendo valor
-    ldr x0, [sp, #0]
+    // Cargando CHAR: 'B' (ASCII: 66)
+    mov x9, #66
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Cargando CHAR: 'C' (ASCII: 67)
+    mov x9, #67
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x9, [sp, #0]
     add sp, sp, #16
-    bl itoa
-    mov x2, x1
-    mov x1, x0
-    mov x0, #1
-    mov x8, #64
-    svc #0
-    // Salto de línea
-    mov x0, #1
-    ldr x1, =newline
-    mov x2, #1
-    mov x8, #64
-    svc #0
+    str x9, [x29, #-240]
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    str x9, [x29, #-256]
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    mov x16, #272
+    sub x16, x29, x16
+    str x9, [x16]
+    // Declaracion corta: arrString
+    // --- EVALUANDO ARREGLO LITERAL ---
+    // Cargando STRING: "Ana"
+    ldr x9, =msg_5
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Cargando STRING: "Luis"
+    ldr x9, =msg_6
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Cargando STRING: "Maria"
+    ldr x9, =msg_7
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    mov x16, #288
+    sub x16, x29, x16
+    str x9, [x16]
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    mov x16, #304
+    sub x16, x29, x16
+    str x9, [x16]
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    mov x16, #320
+    sub x16, x29, x16
+    str x9, [x16]
+    // --- IMPRESION ---
+    // --- LECTURA DE ARREGLO: arrFloat ---
+    // Cargando  INT: 0
+    mov x9, #0
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x14, x11
+    mov x12, 176
+    mov x13, 16
+    mul x15, x14, x13
+    sub x16, x12, x15
+    sub x16, x29, x16
+    ldr x9, [x16, #0]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    fmov s0, w1
+    fcvt d0, s0
+    ldr x0, =fmt_float
+    bl printf
+    ldr x0, =fmt_space
+    bl printf
+    // --- LECTURA DE ARREGLO: arrBool ---
+    // Cargando  INT: 1
+    mov x9, #1
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x14, x11
+    mov x12, 224
+    mov x13, 16
+    mul x15, x14, x13
+    sub x16, x12, x15
+    sub x16, x29, x16
+    ldr x9, [x16, #0]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    cmp x1, xzr
+    b.ne bool_true_0
+    ldr x1, =msg_8
+    b bool_end_1
+    bool_true_0:
+    ldr x1, =msg_9
+    bool_end_1:
+    ldr x0, =fmt_str
+    bl printf
+    ldr x0, =fmt_space
+    bl printf
+    // --- LECTURA DE ARREGLO: arrRune ---
+    // Cargando  INT: 2
+    mov x9, #2
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x14, x11
+    mov x12, 272
+    mov x13, 16
+    mul x15, x14, x13
+    sub x16, x12, x15
+    sub x16, x29, x16
+    ldr x9, [x16, #0]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_int
+    bl printf
+    ldr x0, =fmt_space
+    bl printf
+    // --- LECTURA DE ARREGLO: arrString ---
+    // Cargando  INT: 0
+    mov x9, #0
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x14, x11
+    mov x12, 320
+    mov x13, 16
+    mul x15, x14, x13
+    sub x16, x12, x15
+    sub x16, x29, x16
+    ldr x9, [x16, #0]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_str
+    bl printf
+    ldr x0, =fmt_newline
+    bl printf
+    // --- IMPRESION ---
+    // Cargando STRING: "\n--- 5.3 ACCESO Y MODIFICACION 1D ---"
+    ldr x9, =msg_10
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_str
+    bl printf
+    ldr x0, =fmt_newline
+    bl printf
+    // --- IMPRESION ---
+    // Cargando STRING: "Original arregloInit[1]:"
+    ldr x9, =msg_11
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_str
+    bl printf
+    ldr x0, =fmt_space
+    bl printf
+    // --- LECTURA DE ARREGLO: arregloInit ---
+    // Cargando  INT: 1
+    mov x9, #1
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x14, x11
+    mov x12, 96
+    mov x13, 16
+    mul x15, x14, x13
+    sub x16, x12, x15
+    sub x16, x29, x16
+    ldr x9, [x16, #0]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_int
+    bl printf
+    ldr x0, =fmt_newline
+    bl printf
+    // --- ASIGNACION A ARREGLO: arregloInit (=) ---
+    // Cargando  INT: 1
+    mov x9, #1
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x14, x11
+    mov x12, 96
+    mov x13, 16
+    mul x15, x14, x13
+    sub x16, x12, x15
+    sub x16, x29, x16
+    // Cargando  INT: 99
+    mov x9, #99
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x10, [sp, #0]
+    add sp, sp, #16
+    str x10, [x16, #0]
+    // --- IMPRESION ---
+    // Cargando STRING: "Modificado arregloInit[1]:"
+    ldr x9, =msg_12
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_str
+    bl printf
+    ldr x0, =fmt_space
+    bl printf
+    // --- LECTURA DE ARREGLO: arregloInit ---
+    // Cargando  INT: 1
+    mov x9, #1
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x14, x11
+    mov x12, 96
+    mov x13, 16
+    mul x15, x14, x13
+    sub x16, x12, x15
+    sub x16, x29, x16
+    ldr x9, [x16, #0]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_int
+    bl printf
+    ldr x0, =fmt_newline
+    bl printf
+    // --- IMPRESION ---
+    // Cargando STRING: "Longitud arregloInit:"
+    ldr x9, =msg_13
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_str
+    bl printf
+    ldr x0, =fmt_space
+    bl printf
+    // Funcion embebida: len() de Arreglo/Matriz
+    mov x9, 5
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_int
+    bl printf
+    ldr x0, =fmt_newline
+    bl printf
+    // --- IMPRESION ---
+    // Cargando STRING: "\n--- 5.4 DECLARACION MULTIDIMENSIONAL ---"
+    ldr x9, =msg_14
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_str
+    bl printf
+    ldr x0, =fmt_newline
+    bl printf
+    // Declaracion de variables: matrizNoInit
+    mov x9, xzr
+    mov x16, #320
+    sub x16, x29, x16
+    str x9, [x16]
+    mov x16, #336
+    sub x16, x29, x16
+    str x9, [x16]
+    mov x16, #352
+    sub x16, x29, x16
+    str x9, [x16]
+    mov x16, #368
+    sub x16, x29, x16
+    str x9, [x16]
+    // Declaracion corta: matrizInit
+    // --- EVALUANDO ARREGLO LITERAL ---
+    // Cargando  INT: 1
+    mov x9, #1
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Cargando  INT: 2
+    mov x9, #2
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Cargando  INT: 3
+    mov x9, #3
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    // Cargando  INT: 4
+    mov x9, #4
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    mov x16, #384
+    sub x16, x29, x16
+    str x9, [x16]
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    mov x16, #400
+    sub x16, x29, x16
+    str x9, [x16]
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    mov x16, #416
+    sub x16, x29, x16
+    str x9, [x16]
+    ldr x9, [sp, #0]
+    add sp, sp, #16
+    mov x16, #432
+    sub x16, x29, x16
+    str x9, [x16]
+    // --- IMPRESION ---
+    // Cargando STRING: "Matriz no inicializada [1][1]:"
+    ldr x9, =msg_15
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_str
+    bl printf
+    ldr x0, =fmt_space
+    bl printf
+    // --- LECTURA DE ARREGLO: matrizNoInit ---
+    mov x14, xzr
+    // Cargando  INT: 1
+    mov x9, #1
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x14, x11
+    // Cargando  INT: 1
+    mov x9, #1
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x12, 2
+    mul x14, x14, x12
+    add x14, x14, x11
+    mov x12, 368
+    mov x13, 16
+    mul x15, x14, x13
+    sub x16, x12, x15
+    sub x16, x29, x16
+    ldr x9, [x16, #0]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_int
+    bl printf
+    ldr x0, =fmt_newline
+    bl printf
+    // --- IMPRESION ---
+    // Cargando STRING: "Matriz inicializada [0][0]:"
+    ldr x9, =msg_16
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_str
+    bl printf
+    ldr x0, =fmt_space
+    bl printf
+    // --- LECTURA DE ARREGLO: matrizInit ---
+    mov x14, xzr
+    // Cargando  INT: 0
+    mov x9, #0
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x14, x11
+    // Cargando  INT: 0
+    mov x9, #0
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x12, 2
+    mul x14, x14, x12
+    add x14, x14, x11
+    mov x12, 432
+    mov x13, 16
+    mul x15, x14, x13
+    sub x16, x12, x15
+    sub x16, x29, x16
+    ldr x9, [x16, #0]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_int
+    bl printf
+    ldr x0, =fmt_newline
+    bl printf
+    // --- IMPRESION ---
+    // Cargando STRING: "\n--- 5.5 ACCESO Y MODIFICACION MULTIDIMENSIONAL ---"
+    ldr x9, =msg_17
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_str
+    bl printf
+    ldr x0, =fmt_newline
+    bl printf
+    // --- IMPRESION ---
+    // Cargando STRING: "Original matrizNoInit[0][1]:"
+    ldr x9, =msg_18
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_str
+    bl printf
+    ldr x0, =fmt_space
+    bl printf
+    // --- LECTURA DE ARREGLO: matrizNoInit ---
+    mov x14, xzr
+    // Cargando  INT: 0
+    mov x9, #0
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x14, x11
+    // Cargando  INT: 1
+    mov x9, #1
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x12, 2
+    mul x14, x14, x12
+    add x14, x14, x11
+    mov x12, 368
+    mov x13, 16
+    mul x15, x14, x13
+    sub x16, x12, x15
+    sub x16, x29, x16
+    ldr x9, [x16, #0]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_int
+    bl printf
+    ldr x0, =fmt_newline
+    bl printf
+    // --- ASIGNACION A ARREGLO: matrizNoInit (=) ---
+    mov x14, xzr
+    // Cargando  INT: 0
+    mov x9, #0
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x14, x11
+    // Cargando  INT: 1
+    mov x9, #1
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x12, 2
+    mul x14, x14, x12
+    add x14, x14, x11
+    mov x12, 368
+    mov x13, 16
+    mul x15, x14, x13
+    sub x16, x12, x15
+    sub x16, x29, x16
+    // Cargando  INT: 77
+    mov x9, #77
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x10, [sp, #0]
+    add sp, sp, #16
+    str x10, [x16, #0]
+    // --- IMPRESION ---
+    // Cargando STRING: "Modificado matrizNoInit[0][1]:"
+    ldr x9, =msg_19
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_str
+    bl printf
+    ldr x0, =fmt_space
+    bl printf
+    // --- LECTURA DE ARREGLO: matrizNoInit ---
+    mov x14, xzr
+    // Cargando  INT: 0
+    mov x9, #0
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x14, x11
+    // Cargando  INT: 1
+    mov x9, #1
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x11, [sp, #0]
+    add sp, sp, #16
+    mov x12, 2
+    mul x14, x14, x12
+    add x14, x14, x11
+    mov x12, 368
+    mov x13, 16
+    mul x15, x14, x13
+    sub x16, x12, x15
+    sub x16, x29, x16
+    ldr x9, [x16, #0]
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_int
+    bl printf
+    ldr x0, =fmt_newline
+    bl printf
+    // --- IMPRESION ---
+    // Cargando STRING: "\n=== FIN DE CALIFICACION: ARREGLOS ==="
+    ldr x9, =msg_20
+    sub sp, sp, #16
+    str x9, [sp, #0]
+    ldr x1, [sp, #0]
+    add sp, sp, #16
+    ldr x0, =fmt_str
+    bl printf
+    ldr x0, =fmt_newline
+    bl printf
     func_end_main:
     // Restaurar LR y FP
     ldr x30, [sp, #16]
     ldr x29, [sp, #0]
     // Restaurar SP
-    add sp, sp, #384
+    add sp, sp, #480
     // Retornar
     ret
     // ------- Fin de funcion: main -------
-itoa:
-ldr x2, =buffer
-add x2, x2, #31
-mov w3, #0
-strb w3, [x2]
-mov x4, #10
-mov x5, x0
-cmp x5, #0
-b.ge loop 
-neg x5, x5
-loop:
-udiv x6, x5, x4
-msub x7, x6, x4, x5
-add x7, x7, #48
-sub x2, x2, #1
-strb w7, [x2]
-mov x5, x6
-cbnz x6, loop
-cmp x0, #0 
-bge done_itoa 
-mov w7, #45 
-sub x2, x2, #1 
-strb w7, [x2] 
-done_itoa: 
-ldr x3, =buffer
-add x3, x3, #31
-sub x1, x3, x2
-mov x0, x2
-ret
 .section .rodata
-newline: .asciz "\n"
+fmt_int: .asciz "%d"
+fmt_float: .asciz "%f"
+fmt_str: .asciz "%s"
+fmt_char: .asciz "%c"
+fmt_space: .asciz " "
+fmt_newline: .asciz "\n"
+fmt_nil: .asciz "<nil>"
+msg_0: .asciz "=== INICIO DE CALIFICACION: ARREGLOS ==="
+msg_1: .asciz "\n--- 5.1 DECLARACION 1D INICIALIZADA Y NO INICIALIZADA ---"
+msg_2: .asciz "No inicializado pos0:"
+msg_3: .asciz "Inicializado pos2:"
+msg_4: .asciz "\n--- 5.2 ARREGLOS DE TIPOS ESTATICOS ---"
+msg_5: .asciz "Ana"
+msg_6: .asciz "Luis"
+msg_7: .asciz "Maria"
+msg_8: .asciz "false"
+msg_9: .asciz "true"
+msg_10: .asciz "\n--- 5.3 ACCESO Y MODIFICACION 1D ---"
+msg_11: .asciz "Original arregloInit[1]:"
+msg_12: .asciz "Modificado arregloInit[1]:"
+msg_13: .asciz "Longitud arregloInit:"
+msg_14: .asciz "\n--- 5.4 DECLARACION MULTIDIMENSIONAL ---"
+msg_15: .asciz "Matriz no inicializada [1][1]:"
+msg_16: .asciz "Matriz inicializada [0][0]:"
+msg_17: .asciz "\n--- 5.5 ACCESO Y MODIFICACION MULTIDIMENSIONAL ---"
+msg_18: .asciz "Original matrizNoInit[0][1]:"
+msg_19: .asciz "Modificado matrizNoInit[0][1]:"
+msg_20: .asciz "\n=== FIN DE CALIFICACION: ARREGLOS ==="
+.section .bss
+string_heap: .skip 8192      // 8KB de memoria para nuevas cadenas
+string_heap_ptr: .quad 0     // Puntero a la memoria libre
+
+.section .text
+// Funciones de inicializacion y concatenacion
+init_heap:
+    ldr x0, =string_heap
+    ldr x1, =string_heap_ptr
+    str x0, [x1]
+    ret
+
+concat_strings:
+    ldr x2, =string_heap_ptr
+    ldr x3, [x2]             
+    mov x4, x3               
+copy_str1:
+    ldrb w5, [x0], #1        
+    cbz w5, copy_str2        
+    strb w5, [x3], #1        
+    b copy_str1
+copy_str2:
+    ldrb w5, [x1], #1        
+    cbz w5, done_concat      
+    strb w5, [x3], #1        
+    b copy_str2
+done_concat:
+    strb wzr, [x3], #1       
+    str x3, [x2]             
+    mov x0, x4               
+    ret
+
+// len
+string_length:
+    // Parametro: x0 = puntero al string. Retorno: x0 = longitud
+    mov x1, 0                
+count_loop:
+    ldrb w2, [x0], #1        
+    cbz w2, done_length      
+    add x1, x1, 1            
+    b count_loop
+done_length:
+    mov x0, x1               
+    ret
+
+// substr
+substring:
+    // x0 = str_ptr, x1 = start, x2 = length. Retorno: x0 = nuevo_str_ptr
+    ldr x3, =string_heap_ptr
+    ldr x4, [x3]          
+    mov x5, x4            // guardamos inicio para retornar
+
+    add x0, x0, x1        // avanza el puntero fuente hasta 'start'
+
+copy_substr:
+    cbz x2, done_substr   // Si length == 0 se termina
+    ldrb w6, [x0], #1     // Leemos 1 byte
+    cbz w6, done_substr   // Si encontramos ' ' antes de tiempo se termina 
+    strb w6, [x4], #1     // Guardamos en el heap
+    sub x2, x2, 1         // length--
+    b copy_substr
+
+done_substr:
+    strb wzr, [x4], #1    // Ponemos ' ' al final
+    str x4, [x3]          // Actualizamos puntero del heap
+    mov x0, x5            // Retornamos la nueva cadena
+    ret

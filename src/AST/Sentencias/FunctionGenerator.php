@@ -4,7 +4,7 @@ namespace App\AST\Sentencias;
 
 use App\Env\Symbol;
 use App\Env\Enviroment;
-
+use App\Env\Result;
 
 class FunctionGenerator
 {
@@ -30,8 +30,10 @@ class FunctionGenerator
         
         $totalSlots = $symbol->totalSlots;
         $paramCount = $symbol->paramCount;
-        // conversion a bytes
+        
+        // conversion a bytes 
         $frameSize = ($totalSlots + 2) * 16;
+        $frameSize = ceil($frameSize / 16) * 16;
 
         $this->asmGenerador->comment("Reservar espacio para registro de activacion");
         $this->asmGenerador->subi("sp", "sp", $frameSize);
@@ -48,17 +50,25 @@ class FunctionGenerator
 
         $this->compiler->env = $localEnv;
         
+        $intCount = 0;
+        $floatCount = 0;
+
         foreach ($symbol->params as $param) {
-            $callerOffset = ($paramCount - 1 - $param->position) * 16;
-            $this->asmGenerador->comment("Cargar parametro: " . $param->id);
-            $this->asmGenerador->ldr("x9", "x29", $callerOffset);
-            
-            // registramos el param y dejamos que el env calcule el offset
+            // registramos el param y dejamos que el env calcule el offset local
             $paramSymbol = new Symbol($param->tipo, Symbol::CLASE_VARIABLE);
             $localEnv->set($param->id, $paramSymbol);
             $localOffset = $localEnv->allocateVarOffset($param->id);
             
-            $this->asmGenerador->str("x9", "x29", "-$localOffset");
+            $this->asmGenerador->comment("Recibiendo parametro: " . $param->id);
+            
+            if ($param->tipo === Result::FLOAT) {
+                $regIn = "s" . $floatCount++;
+                $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("fmov", "w9", $regIn);
+                $this->asmGenerador->str("x9", "x29", "-$localOffset");
+            } else {
+                $regIn = "x" . $intCount++;
+                $this->asmGenerador->str($regIn, "x29", "-$localOffset");
+            }
         }
         
         $this->compiler->visit($symbol->valor);

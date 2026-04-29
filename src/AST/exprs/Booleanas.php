@@ -2,6 +2,7 @@
 
 namespace App\Ast\exprs;
 
+use App\ARM\Instruction;
 use Context\RatExprContext;
 use Context\AndExprContext;
 use Context\OrExprContext;
@@ -14,16 +15,67 @@ trait Booleanas
 {
     public function visitRatExpr(RatExprContext $ctx)
     {
-        $this->visit($ctx->expression_rational());
-        $this->visit($ctx->expression_arithmetic());
-
+        $left = $this->visit($ctx->expression_rational());
+        $right = $this->visit($ctx->expression_arithmetic());
         $op = $ctx->getChild(1)->getText();
-        $this->asmGenerador->comment("Relacional: " . $op);
 
-        $right = $this->stack->popVal("x10");
-        $left = $this->stack->popVal("x11");
+        if ($left->tipo === "nil" && $right->tipo === "nil") {
+            if ($op === '==' || $op === '!=') {
+                $this->stack->popVal("xzr"); // sacar de la pila
+                $this->stack->popVal("xzr"); 
+                
+                $this->asmGenerador->mov("x9", "xzr");
+                $this->stack->pushVal("x9");
+                return Result::stack("nil", $this->stack->getStackOff());
+            } else {
+                $this->addErr("Error Semantico: Operacion '$op' no permitida entre 'nil' y 'nil'", $ctx);
+                $this->stack->popVal("xzr"); 
+                $this->stack->popVal("xzr");
+                $this->stack->pushIn(0);
+                return Result::stack(Result::BOOL, $this->stack->getStackOff());
+            }
+        }
 
-        $this->asmGenerador->cmp($left, $right);
+        $t1 = ($left->tipo === Result::CHAR) ? Result::INT : $left->tipo;
+        $t2 = ($right->tipo === Result::CHAR) ? Result::INT : $right->tipo;
+        
+        $esNumerico = in_array($t1, [Result::INT, Result::FLOAT]) && in_array($t2, [Result::INT, Result::FLOAT]);
+        $esCadena = ($t1 === Result::STRING && $t2 === Result::STRING);
+        $esBool = ($t1 === Result::BOOL && $t2 === Result::BOOL && in_array($op, ['==', '!=']));
+
+        if (!$esNumerico && !$esCadena && !$esBool) {
+            $this->addErr("Error Semantico: Incompatible operacion '$op' entre '" . $left->tipo . "' y '" . $right->tipo . "'", $ctx);
+            $this->stack->popVal("xzr"); 
+            $this->stack->popVal("xzr");
+            $this->stack->pushIn(0);
+            return Result::stack(Result::BOOL, $this->stack->getStackOff());
+        }
+
+        
+
+        $this->asmGenerador->comment("Relacional: $op");
+        $rightReg = $this->stack->popVal("x10");
+        $leftReg = $this->stack->popVal("x11");
+
+        // si hay al menos un float
+        if ($esNumerico && ($t1 === Result::FLOAT || $t2 === Result::FLOAT)) {
+            if ($t1 === Result::INT) {
+                $this->asmGenerador->instrucciones[] = new Instruction("scvtf", "s0", "w11");
+            } else {
+                $this->asmGenerador->instrucciones[] = new Instruction("fmov", "s0", "w11");
+            }
+
+            if ($t2 === Result::INT) {
+                $this->asmGenerador->instrucciones[] = new Instruction("scvtf", "s1", "w10");
+            } else {
+                $this->asmGenerador->instrucciones[] = new Instruction("fmov", "s1", "w10");
+            }
+            $this->asmGenerador->instrucciones[] = new Instruction("fcmp", "s0", "s1");
+        
+        // si es entero
+        } else {
+            $this->asmGenerador->cmp("x11", "x10");
+        }
 
         switch ($op) {
             case '<':  $this->asmGenerador->cset("x9", "lt"); break;
@@ -39,50 +91,61 @@ trait Booleanas
     }
 
     public function visitAndExpr(AndExprContext $ctx){
-        $this->visit($ctx->logicAnd());
-        $this->visit($ctx->expression_rational());
+        $left = $this->visit($ctx->logicAnd());
+        $right = $this->visit($ctx->expression_rational());
+
+        if ($left->tipo !== Result::BOOL || $right->tipo !== Result::BOOL) {
+            $this->addErr("Error Semantico: && espera 'bool', se recibio '" . $left->tipo . "' y '" . $right->tipo . "'", $ctx);
+            $this->stack->pushIn(0);
+            return Result::stack(Result::BOOL, $this->stack->getStackOff());
+        }
 
         $this->asmGenerador->comment("Logico: AND && ");
 
-        $right = $this->stack->popVal("x10");
-        $left = $this->stack->popVal("x11");
+        $rightReg = $this->stack->popVal("x10");
+        $leftReg = $this->stack->popVal("x11");
 
-        $this->asmGenerador->and_op("x9", $left, $right);
+        $this->asmGenerador->and_op("x9", "x11", "x10");
         $this->stack->pushVal("x9");
         return Result::stack(Result::BOOL, $this->stack->getStackOff());
 
     }
 
     public function visitOrExpr(OrExprContext $ctx){
-        $this->visit($ctx->logicOr());
-        $this->visit($ctx->logicAnd());
+        $left = $this->visit($ctx->logicOr());
+        $right = $this->visit($ctx->logicAnd());
 
+        if ($left->tipo !== Result::BOOL || $right->tipo !== Result::BOOL) {
+            $this->addErr("Error Semantico: || espera 'bool', se recibio '" . $left->tipo . "' y '" . $right->tipo . "'", $ctx);
+            $this->stack->pushIn(0);
+            return Result::stack(Result::BOOL, $this->stack->getStackOff());
+        }
         $this->asmGenerador->comment("Logico: OR || ");
 
-        $right = $this->stack->popVal("x10");
-        $left = $this->stack->popVal("x11");
+        $rightReg = $this->stack->popVal("x10");
+        $leftReg = $this->stack->popVal("x11");
 
-        $this->asmGenerador->orr("x9", $left, $right);
+        $this->asmGenerador->orr("x9", "x11", "x10");
         $this->stack->pushVal("x9");
         return Result::stack(Result::BOOL, $this->stack->getStackOff());
 
     }
 
-     public function visitUnaryNot(UnaryNotContext $ctx){
-        $this->visit($ctx->factor());
+    public function visitUnaryNot(UnaryNotContext $ctx){
+        $operand = $this->visit($ctx->factor());
+
+        if ($operand->tipo !== Result::BOOL) {
+            $this->addErr("Error Semantico: ! espera 'bool', se recibio '" . $operand->tipo . "'", $ctx);
+            $this->stack->pushIn(0);
+            return Result::stack(Result::BOOL, $this->stack->getStackOff());
+        }
 
         $this->asmGenerador->comment("Logico: NOT ! ");
-        
-        $opReg = $this->stack->popVal();
-
-        $this->asmGenerador->cmp($opReg, "xzr");
+        $opReg = $this->stack->popVal("x10");
+        $this->asmGenerador->cmp("x10", "xzr");
         $this->asmGenerador->cset("x9", "eq");
-        
-
-
         $this->stack->pushVal("x9");
         return Result::stack(Result::BOOL, $this->stack->getStackOff());
-
     }
 
     public function visitBreakStm(BreakStmContext $ctx) {
