@@ -7,23 +7,32 @@ use App\Env\Symbol;
 use App\Env\Result;
 use App\Env\Enviroment;
 use GrammarBaseVisitor; 
-
+use App\Env\ReporteSimbolos;
 trait FunctionDeclaracion
 {
     public function visitFuncStmt(FuncStmtContext $ctx)
     {
         $funcName = $ctx->ID()->getText();
+
+        $linea = $ctx->getStart()->getLine();
+        $col = $ctx->getStart()->getCharPositionInLine();
+        ReporteSimbolos::add($funcName, 'función', 'global', '—', $linea, $col);
         
         $returnType = "void";
+        $returnDims = [];
         $resCtx = $ctx->funcParRet()->result();
         if ($resCtx !== null) {
             if (count($resCtx->type()) > 1) {
                 $returnType = [];
                 foreach ($resCtx->type() as $t) {
-                    $returnType[] = $t->getText();
+                    $d = [];
+                    $cleanT = $this->normalizeFunctionType($t->getText(), $d);
+                    if (!empty($d) && !str_ends_with($cleanT, "_ptr")) $cleanT .= "_ptr";
+                    $returnType[] = $cleanT;
                 }
             } else {
-                $returnType = $resCtx->type(0)->getText();
+                $returnType = $this->normalizeFunctionType($resCtx->type(0)->getText(), $returnDims);
+                if (!empty($returnDims) && !str_ends_with($returnType, "_ptr")) $returnType .= "_ptr";
             }
         }
 
@@ -33,9 +42,20 @@ trait FunctionDeclaracion
         
         if ($paramCtx !== null) {
             foreach ($paramCtx->paramDcl() as $paramDcl) {
-                $tipo = $paramDcl->type()->getText();
+                $tipoCrudo = $paramDcl->type()->getText();
+                $dims = [];
+                $tipoLimpio = $this->normalizeFunctionType($tipoCrudo, $dims);
+                if (!empty($dims) && !str_ends_with($tipoLimpio, "_ptr")) $tipoLimpio .= "_ptr";
+                
                 foreach ($paramDcl->idList()->ID() as $idNode) {
-                    $params[] = new Parametro($idNode->getText(), $tipo, $paramIndex++);
+                    $p = new Parametro($idNode->getText(), $tipoLimpio, $paramIndex++);
+                    $p->dimensiones = $dims;
+                    $params[] = $p;
+
+                    $pLinea = $idNode->getSymbol()->getLine();
+                    $pCol = $idNode->getSymbol()->getCharPositionInLine();
+                    $esArr = !empty($dims);
+                    ReporteSimbolos::add($idNode->getText(), $tipoLimpio, $funcName, '—', $pLinea, $pCol, $esArr);
                 }
             }
         }
@@ -55,15 +75,49 @@ trait FunctionDeclaracion
         $funcSymbol->paramCount = $paramCount;
         $funcSymbol->localVarCount = $localVarCount;
         $funcSymbol->totalSlots = $totalSlots;
+        $funcSymbol->dimensiones = $returnDims; 
         
         $this->env->set($funcName, $funcSymbol);
         
         $funcEnv = new Enviroment($this->env, Enviroment::TYPE_FUNCTION);
         foreach ($params as $param) {
-            $funcEnv->set($param->id, new Symbol($param->tipo, Symbol::CLASE_VARIABLE, 0, 0));
+            $sym = new Symbol($param->tipo, Symbol::CLASE_VARIABLE, 0, 0);
+            $sym->dimensiones = $param->dimensiones;
+            $sym->isParamArray = !empty($param->dimensiones); 
+            $funcEnv->set($param->id, $sym);
         }
 
         return Result::buildVacio();
+    }
+
+    private function normalizeFunctionType($type, &$dims = []) {
+        if ($type === null) return Result::NULO; 
+        $t = $type;
+        $isPointer = false;
+        
+        if(str_starts_with($t, '*')) {
+            $isPointer = true;
+            $t = substr($t, 1);
+        }
+
+        if (preg_match_all('/\[(\d+)\]/', $t, $matches)) {
+            foreach ($matches[1] as $dim) {
+                $dims[] = intval($dim);
+            }
+            $t = preg_replace('/\[\d+\]/', '', $t);
+        }
+
+        if(preg_match('/\]([a-zA-Z0-9_]+)$/', $t, $matches)){
+            $t = $matches[1];
+        }
+        
+        if ($t === 'int32' || $t === 'int') $t = Result::INT;
+        elseif ($t === 'float32' || $t === 'float') $t = Result::FLOAT;
+        elseif ($t === 'rune' || $t === 'char') $t = Result::CHAR;
+        elseif ($t === 'string') $t = Result::STRING;
+        elseif ($t === 'bool') $t = Result::BOOL;
+        
+        return $isPointer ? $t . "_ptr" : $t;
     }
 }
 
@@ -71,6 +125,7 @@ class Parametro {
     public $id;
     public $tipo;
     public $position;
+    public $dimensiones = [];
 
     public function __construct($id, $tipo, $position) {
         $this->id = $id;
@@ -83,12 +138,46 @@ class LocalVarCounter extends GrammarBaseVisitor {
     public $count = 0;
 
     public function visitVarDecl(\Context\VarDeclContext $ctx) {
-        $this->count += count($ctx->idList()->ID());
+        $slots = 1;
+        $tipoCtx = $ctx->type();
+        if ($tipoCtx instanceof \Context\TypeArrayDefContext) {
+            $currType = $tipoCtx;
+            while ($currType instanceof \Context\TypeArrayDefContext || $currType instanceof \Context\ArrayTypeContext) {
+                $arrType = ($currType instanceof \Context\TypeArrayDefContext) ? $currType->arrayType() : $currType;
+                if ($arrType->expression()) {
+                    $slots *= intval($arrType->expression()->getText());
+                }
+                $nextType = $arrType->type();
+                if ($nextType instanceof \Context\TypePrimitiveContext) {
+                    break;
+                } else {
+                    $currType = $nextType;
+                }
+            }
+        }
+        $this->count += count($ctx->idList()->ID()) * $slots;
         return $this->visitChildren($ctx);
     }
 
     public function visitShortDecl(\Context\ShortDeclContext $ctx) {
-        $this->count += count($ctx->idList()->ID());
+        $slots = 1;
+        $exprs = $ctx->exprList()->expression();
+        if ($exprs !== null) {
+            foreach ($exprs as $expr) {
+                $text = $expr->getText();
+                if (str_starts_with($text, '[')) {
+                    preg_match_all('/\[(\d+)\]/', $text, $matches);
+                    if (!empty($matches[1])) {
+                        $subSlots = 1;
+                        foreach ($matches[1] as $dim) {
+                            $subSlots *= intval($dim);
+                        }
+                        $slots = max($slots, $subSlots);
+                    }
+                }
+            }
+        }
+        $this->count += count($ctx->idList()->ID()) * $slots;
         return $this->visitChildren($ctx);
     }
 }

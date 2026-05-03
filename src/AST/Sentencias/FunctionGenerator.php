@@ -31,7 +31,6 @@ class FunctionGenerator
         $totalSlots = $symbol->totalSlots;
         $paramCount = $symbol->paramCount;
         
-        // conversion a bytes 
         $frameSize = ($totalSlots + 2) * 16;
         $frameSize = ceil($frameSize / 16) * 16;
 
@@ -47,15 +46,19 @@ class FunctionGenerator
 
         $prevEnv = $this->compiler->env;
         $localEnv = new Enviroment($prevEnv, Enviroment::TYPE_FUNCTION);
-
         $this->compiler->env = $localEnv;
         
         $intCount = 0;
         $floatCount = 0;
 
         foreach ($symbol->params as $param) {
-            // registramos el param y dejamos que el env calcule el offset local
             $paramSymbol = new Symbol($param->tipo, Symbol::CLASE_VARIABLE);
+            
+            if (isset($param->dimensiones) && !empty($param->dimensiones)) {
+                $paramSymbol->dimensiones = $param->dimensiones;
+                $paramSymbol->isParamArray = true;
+            }
+
             $localEnv->set($param->id, $paramSymbol);
             $localOffset = $localEnv->allocateVarOffset($param->id);
             
@@ -72,10 +75,42 @@ class FunctionGenerator
         }
         
         $this->compiler->visit($symbol->valor);
-
         $this->compiler->env = $prevEnv;
-        
         $this->asmGenerador->label($returnLabel);
+
+        $returnDims = $symbol->dimensiones ?? [];
+        if (!empty($returnDims)) {
+            $elements = 1;
+            foreach ($returnDims as $d) $elements *= intval($d);
+            $bytes = $elements * 16;
+            
+            $this->asmGenerador->comment("--- Salvando arreglo retornado en el HEAP ---");
+            $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("ldr", "x1", "=string_heap_ptr");
+            $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("ldr", "x2", "[x1]");
+            $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("mov", "x3", $bytes);
+            $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("add", "x4", "x2", "x3");
+            $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("str", "x4", "[x1]");
+            
+            $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("sub", "x5", "x4", "16");
+            $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("mov", "x10", "x0");
+            $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("mov", "x11", "x5");
+            $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("mov", "x12", "0");
+            
+            $loopLabel = "copy_loop_" . $funcName;
+            $endLabel = "copy_done_" . $funcName;
+            
+            $this->asmGenerador->label($loopLabel);
+            $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("cmp", "x12", $elements);
+            $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("b.ge", $endLabel);
+            $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("ldr", "x13", "[x10]");
+            $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("str", "x13", "[x11]");
+            $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("sub", "x10", "x10", "16");
+            $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("sub", "x11", "x11", "16");
+            $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("add", "x12", "x12", "1");
+            $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("b", $loopLabel);
+            $this->asmGenerador->label($endLabel);
+            $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("mov", "x0", "x5");
+        }
         
         $this->asmGenerador->comment("Restaurar LR y FP");
         $this->asmGenerador->ldr("x30", "sp", 16);

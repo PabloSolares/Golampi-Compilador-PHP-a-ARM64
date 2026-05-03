@@ -298,7 +298,7 @@ class ASMGenerator {
     public function rodata(){
         $rodata = ".section .rodata\n";
         $rodata .= "fmt_int: .asciz \"%d\"\n";
-        $rodata .= "fmt_float: .asciz \"%f\"\n";
+        $rodata .= "fmt_float: .asciz \"%.7g\"\n";
         $rodata .= "fmt_str: .asciz \"%s\"\n";
         $rodata .= "fmt_char: .asciz \"%c\"\n";
         

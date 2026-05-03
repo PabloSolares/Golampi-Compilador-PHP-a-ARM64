@@ -1,5 +1,5 @@
 <?php
-namespace App\AST\exprs;
+namespace App\Ast\exprs;
 
 use App\Env\Result;
 
@@ -64,13 +64,35 @@ trait ArrayOperations {
             return Result::buildVacio();
         }
 
+        $tipoBase = is_array($symbol->tipo) ? $symbol->tipo[0] : $symbol->tipo;
+        $tipoBaseLimpio = str_replace("_ptr", "", (string)$tipoBase);
+
+        
+        if ($tipoBaseLimpio === Result::STRING && empty($symbol->dimensiones)) {
+            $this->asmGenerador->comment("--- LECTURA DE CARACTER EN STRING: $idName ---");
+            
+            $this->visit($ctx->expression()[0]); 
+            $this->stack->popVal("x10"); // x10 contiene el indice
+            
+            $this->asmGenerador->ldr("x11", "x29", "-" . $symbol->offset);
+            
+            $this->asmGenerador->add("x12", "x11", "x10");
+            
+            $this->asmGenerador->instrucciones[] = new \App\ARM\Instruction("ldrb", "w9", "[x12]");
+            
+            $this->stack->pushVal("x9");
+            
+            return Result::stack(Result::CHAR, $this->stack->getStackOff());
+        }
+
+        // lectura normal
         $this->asmGenerador->comment("--- LECTURA DE ARREGLO: $idName ---");
         $this->calculateArrayOffset($symbol, $ctx);
         
         $this->asmGenerador->ldr("x9", "x16", 0);
         $this->stack->pushVal("x9");
         
-        return Result::stack($symbol->tipo, $this->stack->getStackOff());
+        return Result::stack($tipoBaseLimpio, $this->stack->getStackOff());
     }
 
     public function calculateArrayOffset($symbol, $arrayAccessCtx) {
@@ -98,10 +120,20 @@ trait ArrayOperations {
             }
         }
         
-        $this->asmGenerador->mov("x12", $symbol->offset);
-        $this->asmGenerador->mov("x13", 16);
-        $this->asmGenerador->mul("x15", "x14", "x13");
-        $this->asmGenerador->sub("x16", "x12", "x15");
-        $this->asmGenerador->sub("x16", "x29", "x16"); 
+        $tipoBase = is_array($symbol->tipo) ? $symbol->tipo[0] : $symbol->tipo;
+        $isPointer = (isset($symbol->isParamArray) && $symbol->isParamArray) || str_contains((string)$tipoBase, "_ptr");
+
+        if ($isPointer) {
+            $this->asmGenerador->ldr("x12", "x29", "-" . $symbol->offset);
+            $this->asmGenerador->mov("x13", 16);
+            $this->asmGenerador->mul("x15", "x14", "x13");
+            $this->asmGenerador->sub("x16", "x12", "x15"); 
+        } else {
+            $this->asmGenerador->mov("x12", $symbol->offset);
+            $this->asmGenerador->mov("x13", 16);
+            $this->asmGenerador->mul("x15", "x14", "x13");
+            $this->asmGenerador->add("x16", "x12", "x15"); 
+            $this->asmGenerador->sub("x16", "x29", "x16"); 
+        }           
     }
 }

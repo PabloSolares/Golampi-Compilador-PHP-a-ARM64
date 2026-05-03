@@ -5,6 +5,8 @@ use Context\FuncCallExprContext;
 use Context\CallStmContext;
 use App\Env\Symbol;
 use App\Env\Result;
+use App\ARM\Instruction;
+
 
 trait FunctionCall
 {
@@ -15,7 +17,7 @@ trait FunctionCall
     public function visitCallStm(CallStmContext $ctx) {
         $this->visit($ctx->funcAccess());
         if ($this->stack->getStackOff() > 0) {
-             $this->stack->popVal("xzr");
+             $this->stack->popVal("x9");
         }
         return Result::buildVacio();
     }
@@ -86,7 +88,13 @@ trait FunctionCall
                     $this->asmGenerador->mov("x9", "x0");
                 }
                 $this->stack->pushVal("x9");
-                return Result::stack($symbol->tipo, $this->stack->getStackOff());
+                
+                $res = Result::stack($symbol->tipo, $this->stack->getStackOff());
+                if (isset($symbol->dimensiones) && !empty($symbol->dimensiones)) {
+                    $res->dimensiones = $symbol->dimensiones;
+                    if (!str_contains((string)$res->tipo, "_ptr")) $res->tipo .= "_ptr";
+                }
+                return $res;
             }
         }
         return Result::buildVacio();

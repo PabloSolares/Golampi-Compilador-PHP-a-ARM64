@@ -42,16 +42,18 @@ trait Booleanas
         $esNumerico = in_array($t1, [Result::INT, Result::FLOAT]) && in_array($t2, [Result::INT, Result::FLOAT]);
         $esCadena = ($t1 === Result::STRING && $t2 === Result::STRING);
         $esBool = ($t1 === Result::BOOL && $t2 === Result::BOOL && in_array($op, ['==', '!=']));
+        
+        $esPuntero = ((str_contains((string)$t1, "_ptr") || $t1 === "nil") && 
+                      (str_contains((string)$t2, "_ptr") || $t2 === "nil")) && 
+                      in_array($op, ['==', '!=']);
 
-        if (!$esNumerico && !$esCadena && !$esBool) {
+        if (!$esNumerico && !$esCadena && !$esBool && !$esPuntero) {
             $this->addErr("Error Semantico: Incompatible operacion '$op' entre '" . $left->tipo . "' y '" . $right->tipo . "'", $ctx);
             $this->stack->popVal("xzr"); 
             $this->stack->popVal("xzr");
             $this->stack->pushIn(0);
             return Result::stack(Result::BOOL, $this->stack->getStackOff());
         }
-
-        
 
         $this->asmGenerador->comment("Relacional: $op");
         $rightReg = $this->stack->popVal("x10");
@@ -72,7 +74,7 @@ trait Booleanas
             }
             $this->asmGenerador->instrucciones[] = new Instruction("fcmp", "s0", "s1");
         
-        // si es entero
+        // si es entero, bool, char, puntero o nil
         } else {
             $this->asmGenerador->cmp("x11", "x10");
         }

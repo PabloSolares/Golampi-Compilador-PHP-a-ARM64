@@ -4,6 +4,7 @@ require_once 'bootstrap.php';
 
 use Antlr\Antlr4\Runtime\CommonTokenStream;
 use Antlr\Antlr4\Runtime\InputStream;
+use App\Env\ReporteSimbolos;
 
 $input = "";
 $output = "";
@@ -56,7 +57,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         $allErrors = array_merge($errListener->getErrors(), $compiler->errors);
         
-        $symbolTable = [];
+        $symbolTable = ReporteSimbolos::getSimbolos();
+        ReporteSimbolos::clear();
 
     } else {
         $output = "INGRESE UNA EXPRESION";
@@ -175,35 +177,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <?php endif; ?>
 
         <?php if (count($symbolTable) > 0): ?>
-        <div class="bg-white border border-blue-200 rounded-lg shadow-sm overflow-hidden mb-8">
-            <div class="bg-blue-50 border-b border-blue-200 px-4 py-3 text-blue-800 font-semibold text-sm uppercase tracking-wide">
-                Reporte de Tabla de Símbolos
-            </div>
-            <div class="overflow-y-auto max-h-96">
-                <table class="w-full text-sm text-left text-gray-600">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b border-gray-200 sticky top-0">
+        <div class="mb-8 w-full">
+            <h2 class="text-xl font-normal text-black mb-2">Tabla de simbolos</h2>
+            
+            <div class="h-6 w-full bg-[#000000] mb-6"></div> 
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse border-2 border-black font-sans text-[15px]">
+                    <thead>
                         <tr>
-                            <th scope="col" class="px-6 py-3">Identificador</th>
-                            <th scope="col" class="px-6 py-3">Tipo</th>
-                            <th scope="col" class="px-6 py-3">Ámbito</th>
-                            <th scope="col" class="px-6 py-3">Valor</th>
-                            <th scope="col" class="px-6 py-3">Línea</th>
-                            <th scope="col" class="px-6 py-3">Columna</th>
+                            <th class="border-2 border-black bg-[#000000] text-white px-4 py-2 font-bold w-1/6">Identificador</th>
+                            <th class="border-2 border-black bg-[#000000] text-white px-4 py-2 font-bold w-1/6">Tipo</th>
+                            <th class="border-2 border-black bg-[#000000] text-white px-4 py-2 font-bold w-1/6">Ámbito</th>
+                            <th class="border-2 border-black bg-[#000000] text-white px-4 py-2 font-bold w-1/6">Valor</th>
+                            <th class="border-2 border-black bg-[#000000] text-white px-4 py-2 font-bold w-1/12">Línea</th>
+                            <th class="border-2 border-black bg-[#000000] text-white px-4 py-2 font-bold w-1/12">Columna</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($symbolTable as $sym): ?>
-                        <tr class="bg-white border-b border-gray-100 hover:bg-gray-50">
-                            <td class="px-6 py-3 font-bold text-gray-800"><?php echo htmlspecialchars($sym['id']); ?></td>
-                            <td class="px-6 py-3">
-                                <span class="bg-slate-100 text-slate-700 border border-slate-200 px-2 py-1 rounded text-xs">
-                                    <?php echo htmlspecialchars($sym['tipo']); ?>
-                                </span>
-                            </td>
-                            <td class="px-6 py-3"><?php echo htmlspecialchars($sym['ambito']); ?></td>
-                            <td class="px-6 py-3 font-mono text-emerald-600"><?php echo htmlspecialchars($sym['valor']); ?></td>
-                            <td class="px-6 py-3"><?php echo $sym['linea']; ?></td>
-                            <td class="px-6 py-3"><?php echo $sym['columna']; ?></td>
+                        <tr class="bg-white">
+                            <td class="border-2 border-black px-4 py-2 text-black"><?php echo htmlspecialchars($sym['id']); ?></td>
+                            <td class="border-2 border-black px-4 py-2 text-black"><?php echo htmlspecialchars($sym['tipo']); ?></td>
+                            <td class="border-2 border-black px-4 py-2 text-black"><?php echo htmlspecialchars($sym['ambito']); ?></td>
+                            <td class="border-2 border-black px-4 py-2 text-black"><?php echo htmlspecialchars($sym['valor']); ?></td>
+                            <td class="border-2 border-black px-4 py-2 text-black"><?php echo $sym['linea']; ?></td>
+                            <td class="border-2 border-black px-4 py-2 text-black"><?php echo $sym['columna']; ?></td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
