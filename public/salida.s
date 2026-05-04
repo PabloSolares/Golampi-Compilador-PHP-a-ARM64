@@ -4,23 +4,23 @@ main:
    stp x29, x30, [sp, -16]!
    mov x29, sp
    bl init_heap
-    // --- PUNTO DE ENTRADA -----
+    # --- PUNTO DE ENTRADA -----
     bl func_main
-    // Fin del programa
+    # Fin del programa
     mov x0, #0
     ldp x29, x30, [sp], 16
     ret
-    // ------- Funcion : main -------
+    # ------- Funcion : main -------
     func_main:
-    // Reservar espacio para registro de activacion
+    # Reservar espacio para registro de activacion
     sub sp, sp, #1344
-    // Guardar FP y LR al fondo del frame
+    # Guardar FP y LR al fondo del frame
     str x29, [sp, #0]
     str x30, [sp, #16]
-    // Actualizar FP (Apunta al inicio del frame)
+    # Actualizar FP (Apunta al inicio del frame)
     add x29, sp, #1344
-    // --- IMPRESION ---
-    // Cargando STRING: "=== INICIO DE CALIFICACION: ARREGLOS N-D ==="
+    # --- IMPRESION ---
+    # Cargando STRING: "=== INICIO DE CALIFICACION: ARREGLOS N-D ==="
     ldr x9, =msg_0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -30,8 +30,8 @@ main:
     bl printf
     ldr x0, =fmt_newline
     bl printf
-    // --- IMPRESION ---
-    // Cargando STRING: "\n--- 5.3 INDICE DE INESTABILIDAD ---"
+    # --- IMPRESION ---
+    # Cargando STRING: "\n--- 5.3 INDICE DE INESTABILIDAD ---"
     ldr x9, =msg_1
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -41,53 +41,53 @@ main:
     bl printf
     ldr x0, =fmt_newline
     bl printf
-    // Declaracion corta: matrizInstabilidad
-    // --- EVALUANDO ARREGLO LITERAL ---
-    // Cargando  INT: 2
+    # Declaracion corta: matrizInstabilidad
+    # --- EVALUANDO ARREGLO LITERAL ---
+    # Cargando  INT: 2
     mov x9, #2
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 5
+    # Cargando  INT: 5
     mov x9, #5
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 3
+    # Cargando  INT: 3
     mov x9, #3
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 8
+    # Cargando  INT: 8
     mov x9, #8
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 4
+    # Cargando  INT: 4
     mov x9, #4
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 6
+    # Cargando  INT: 6
     mov x9, #6
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 7
+    # Cargando  INT: 7
     mov x9, #7
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 3
+    # Cargando  INT: 3
     mov x9, #3
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 9
+    # Cargando  INT: 9
     mov x9, #9
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 9
+    # Cargando  INT: 9
     mov x9, #9
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -127,8 +127,8 @@ main:
     ldr x9, [sp, #0]
     add sp, sp, #16
     str x9, [x29, #-16]
-    // --- IMPRESION ---
-    // Cargando STRING: "Indice:"
+    # --- IMPRESION ---
+    # Cargando STRING: "Indice:"
     ldr x9, =msg_2
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -138,12 +138,12 @@ main:
     bl printf
     ldr x0, =fmt_space
     bl printf
-    // Lectura de variable: matrizInstabilidad
+    # Lectura de variable: matrizInstabilidad
     mov x10, 16
     sub x9, x29, x10
     sub sp, sp, #16
     str x9, [sp, #0]
-    // --- Llamada a funcion: indiceInestabilidad (AAPCS64) ---
+    # --- Llamada a funcion: indiceInestabilidad (AAPCS64) ---
     ldr x9, [sp, #0]
     add sp, sp, #16
     mov x0, x9
@@ -157,8 +157,8 @@ main:
     bl printf
     ldr x0, =fmt_newline
     bl printf
-    // --- IMPRESION ---
-    // Cargando STRING: "\n--- 5.4 REGLA DE CRAMER ---"
+    # --- IMPRESION ---
+    # Cargando STRING: "\n--- 5.4 REGLA DE CRAMER ---"
     ldr x9, =msg_3
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -168,21 +168,21 @@ main:
     bl printf
     ldr x0, =fmt_newline
     bl printf
-    // Declaracion corta: matrizSistema
-    // --- EVALUANDO ARREGLO LITERAL ---
-    // Cargando  INT: 2
+    # Declaracion corta: matrizSistema
+    # --- EVALUANDO ARREGLO LITERAL ---
+    # Cargando  INT: 2
     mov x9, #2
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 3
+    # Cargando  INT: 3
     mov x9, #3
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -198,13 +198,13 @@ main:
     ldr x9, [sp, #0]
     add sp, sp, #16
     str x9, [x29, #-208]
-    // Declaracion corta: vectorSistema
-    // --- EVALUANDO ARREGLO LITERAL ---
-    // Cargando  INT: 5
+    # Declaracion corta: vectorSistema
+    # --- EVALUANDO ARREGLO LITERAL ---
+    # Cargando  INT: 5
     mov x9, #5
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 6
+    # Cargando  INT: 6
     mov x9, #6
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -218,18 +218,18 @@ main:
     mov x16, #272
     sub x16, x29, x16
     str x9, [x16]
-    // Declaracion corta: resultadoCramer
-    // Lectura de variable: matrizSistema
+    # Declaracion corta: resultadoCramer
+    # Lectura de variable: matrizSistema
     mov x10, 208
     sub x9, x29, x10
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Lectura de variable: vectorSistema
+    # Lectura de variable: vectorSistema
     mov x10, 272
     sub x9, x29, x10
     sub sp, sp, #16
     str x9, [sp, #0]
-    // --- Llamada a funcion: reglaCramer (AAPCS64) ---
+    # --- Llamada a funcion: reglaCramer (AAPCS64) ---
     ldr x9, [sp, #0]
     add sp, sp, #16
     mov x1, x9
@@ -245,8 +245,8 @@ main:
     mov x16, #304
     sub x16, x29, x16
     str x9, [x16]
-    // --- IMPRESION ---
-    // Cargando STRING: "x, y:"
+    # --- IMPRESION ---
+    # Cargando STRING: "x, y:"
     ldr x9, =msg_4
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -256,8 +256,8 @@ main:
     bl printf
     ldr x0, =fmt_space
     bl printf
-    // --- LECTURA DE ARREGLO: resultadoCramer ---
-    // Cargando  INT: 0
+    # --- LECTURA DE ARREGLO: resultadoCramer ---
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -279,8 +279,8 @@ main:
     bl printf
     ldr x0, =fmt_space
     bl printf
-    // --- LECTURA DE ARREGLO: resultadoCramer ---
-    // Cargando  INT: 1
+    # --- LECTURA DE ARREGLO: resultadoCramer ---
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -302,8 +302,8 @@ main:
     bl printf
     ldr x0, =fmt_newline
     bl printf
-    // --- IMPRESION ---
-    // Cargando STRING: "\n--- 5.5 PROMEDIO DE CAPAS ---"
+    # --- IMPRESION ---
+    # Cargando STRING: "\n--- 5.5 PROMEDIO DE CAPAS ---"
     ldr x9, =msg_5
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -313,37 +313,37 @@ main:
     bl printf
     ldr x0, =fmt_newline
     bl printf
-    // Declaracion corta: cubo
-    // --- EVALUANDO ARREGLO LITERAL ---
-    // Cargando  INT: 1
+    # Declaracion corta: cubo
+    # --- EVALUANDO ARREGLO LITERAL ---
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 3
+    # Cargando  INT: 3
     mov x9, #3
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 5
+    # Cargando  INT: 5
     mov x9, #5
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 7
+    # Cargando  INT: 7
     mov x9, #7
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 2
+    # Cargando  INT: 2
     mov x9, #2
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 4
+    # Cargando  INT: 4
     mov x9, #4
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 6
+    # Cargando  INT: 6
     mov x9, #6
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 8
+    # Cargando  INT: 8
     mov x9, #8
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -387,13 +387,13 @@ main:
     mov x16, #320
     sub x16, x29, x16
     str x9, [x16]
-    // Declaracion corta: promedios
-    // Lectura de variable: cubo
+    # Declaracion corta: promedios
+    # Lectura de variable: cubo
     mov x10, 320
     sub x9, x29, x10
     sub sp, sp, #16
     str x9, [sp, #0]
-    // --- Llamada a funcion: promedioCapas (AAPCS64) ---
+    # --- Llamada a funcion: promedioCapas (AAPCS64) ---
     ldr x9, [sp, #0]
     add sp, sp, #16
     mov x0, x9
@@ -406,8 +406,8 @@ main:
     mov x16, #448
     sub x16, x29, x16
     str x9, [x16]
-    // --- IMPRESION ---
-    // Cargando STRING: "Promedios capa 0:"
+    # --- IMPRESION ---
+    # Cargando STRING: "Promedios capa 0:"
     ldr x9, =msg_6
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -417,16 +417,16 @@ main:
     bl printf
     ldr x0, =fmt_space
     bl printf
-    // --- LECTURA DE ARREGLO: promedios ---
+    # --- LECTURA DE ARREGLO: promedios ---
     mov x14, xzr
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -452,16 +452,16 @@ main:
     bl printf
     ldr x0, =fmt_space
     bl printf
-    // --- LECTURA DE ARREGLO: promedios ---
+    # --- LECTURA DE ARREGLO: promedios ---
     mov x14, xzr
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -487,8 +487,8 @@ main:
     bl printf
     ldr x0, =fmt_newline
     bl printf
-    // --- IMPRESION ---
-    // Cargando STRING: "Promedios capa 1:"
+    # --- IMPRESION ---
+    # Cargando STRING: "Promedios capa 1:"
     ldr x9, =msg_7
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -498,16 +498,16 @@ main:
     bl printf
     ldr x0, =fmt_space
     bl printf
-    // --- LECTURA DE ARREGLO: promedios ---
+    # --- LECTURA DE ARREGLO: promedios ---
     mov x14, xzr
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -533,16 +533,16 @@ main:
     bl printf
     ldr x0, =fmt_space
     bl printf
-    // --- LECTURA DE ARREGLO: promedios ---
+    # --- LECTURA DE ARREGLO: promedios ---
     mov x14, xzr
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -568,8 +568,8 @@ main:
     bl printf
     ldr x0, =fmt_newline
     bl printf
-    // --- IMPRESION ---
-    // Cargando STRING: "\n--- 5.6 SOFTMAX ---"
+    # --- IMPRESION ---
+    # Cargando STRING: "\n--- 5.6 SOFTMAX ---"
     ldr x9, =msg_8
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -579,29 +579,29 @@ main:
     bl printf
     ldr x0, =fmt_newline
     bl printf
-    // Declaracion corta: matrizSoft
-    // --- EVALUANDO ARREGLO LITERAL ---
-    // Cargando FLOAT: 1.0
+    # Declaracion corta: matrizSoft
+    # --- EVALUANDO ARREGLO LITERAL ---
+    # Cargando FLOAT: 1.0
     ldr w9, =1065353216
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando FLOAT: 2.0
+    # Cargando FLOAT: 2.0
     ldr w9, =1073741824
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando FLOAT: 3.0
+    # Cargando FLOAT: 3.0
     ldr w9, =1077936128
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando FLOAT: 4.0
+    # Cargando FLOAT: 4.0
     ldr w9, =1082130432
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando FLOAT: 2.0
+    # Cargando FLOAT: 2.0
     ldr w9, =1073741824
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando FLOAT: 1.0
+    # Cargando FLOAT: 1.0
     ldr w9, =1065353216
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -635,13 +635,13 @@ main:
     mov x16, #464
     sub x16, x29, x16
     str x9, [x16]
-    // Declaracion corta: soft
-    // Lectura de variable: matrizSoft
+    # Declaracion corta: soft
+    # Lectura de variable: matrizSoft
     mov x10, 464
     sub x9, x29, x10
     sub sp, sp, #16
     str x9, [sp, #0]
-    // --- Llamada a funcion: softmax (AAPCS64) ---
+    # --- Llamada a funcion: softmax (AAPCS64) ---
     ldr x9, [sp, #0]
     add sp, sp, #16
     mov x0, x9
@@ -654,8 +654,8 @@ main:
     mov x16, #560
     sub x16, x29, x16
     str x9, [x16]
-    // --- IMPRESION ---
-    // Cargando STRING: "Fila 0:"
+    # --- IMPRESION ---
+    # Cargando STRING: "Fila 0:"
     ldr x9, =msg_9
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -665,16 +665,16 @@ main:
     bl printf
     ldr x0, =fmt_space
     bl printf
-    // --- LECTURA DE ARREGLO: soft ---
+    # --- LECTURA DE ARREGLO: soft ---
     mov x14, xzr
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -700,16 +700,16 @@ main:
     bl printf
     ldr x0, =fmt_space
     bl printf
-    // --- LECTURA DE ARREGLO: soft ---
+    # --- LECTURA DE ARREGLO: soft ---
     mov x14, xzr
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -735,16 +735,16 @@ main:
     bl printf
     ldr x0, =fmt_space
     bl printf
-    // --- LECTURA DE ARREGLO: soft ---
+    # --- LECTURA DE ARREGLO: soft ---
     mov x14, xzr
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Cargando  INT: 2
+    # Cargando  INT: 2
     mov x9, #2
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -770,8 +770,8 @@ main:
     bl printf
     ldr x0, =fmt_newline
     bl printf
-    // --- IMPRESION ---
-    // Cargando STRING: "Fila 1:"
+    # --- IMPRESION ---
+    # Cargando STRING: "Fila 1:"
     ldr x9, =msg_10
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -781,16 +781,16 @@ main:
     bl printf
     ldr x0, =fmt_space
     bl printf
-    // --- LECTURA DE ARREGLO: soft ---
+    # --- LECTURA DE ARREGLO: soft ---
     mov x14, xzr
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -816,16 +816,16 @@ main:
     bl printf
     ldr x0, =fmt_space
     bl printf
-    // --- LECTURA DE ARREGLO: soft ---
+    # --- LECTURA DE ARREGLO: soft ---
     mov x14, xzr
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -851,16 +851,16 @@ main:
     bl printf
     ldr x0, =fmt_space
     bl printf
-    // --- LECTURA DE ARREGLO: soft ---
+    # --- LECTURA DE ARREGLO: soft ---
     mov x14, xzr
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Cargando  INT: 2
+    # Cargando  INT: 2
     mov x9, #2
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -886,8 +886,8 @@ main:
     bl printf
     ldr x0, =fmt_newline
     bl printf
-    // --- IMPRESION ---
-    // Cargando STRING: "\n=== FIN DE CALIFICACION: ARREGLOS N-D ==="
+    # --- IMPRESION ---
+    # Cargando STRING: "\n=== FIN DE CALIFICACION: ARREGLOS N-D ==="
     ldr x9, =msg_11
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -898,36 +898,36 @@ main:
     ldr x0, =fmt_newline
     bl printf
     func_end_main:
-    // Restaurar LR y FP
+    # Restaurar LR y FP
     ldr x30, [sp, #16]
     ldr x29, [sp, #0]
-    // Restaurar SP
+    # Restaurar SP
     add sp, sp, #1344
-    // Retornar
+    # Retornar
     ret
-    // ------- Fin de funcion: main -------
-    // ------- Funcion : indiceInestabilidad -------
+    # ------- Fin de funcion: main -------
+    # ------- Funcion : indiceInestabilidad -------
     func_indiceInestabilidad:
-    // Reservar espacio para registro de activacion
+    # Reservar espacio para registro de activacion
     sub sp, sp, #368
-    // Guardar FP y LR al fondo del frame
+    # Guardar FP y LR al fondo del frame
     str x29, [sp, #0]
     str x30, [sp, #16]
-    // Actualizar FP (Apunta al inicio del frame)
+    # Actualizar FP (Apunta al inicio del frame)
     add x29, sp, #368
-    // Recibiendo parametro: matriz
+    # Recibiendo parametro: matriz
     str x0, [x29, #-16]
-    // Declaracion de variables: total
-    // Cargando  INT: 0
+    # Declaracion de variables: total
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x9, [sp, #0]
     add sp, sp, #16
     str x9, [x29, #-32]
-    // --- INICIO FOR ---
-    // Declaracion corta: i
-    // Cargando  INT: 0
+    # --- INICIO FOR ---
+    # Declaracion corta: i
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -935,15 +935,15 @@ main:
     add sp, sp, #16
     str x9, [x29, #-48]
     for_start_0:
-    // Lectura de variable: i
+    # Lectura de variable: i
     ldr x9, [x29, #-48]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 3
+    # Cargando  INT: 3
     mov x9, #3
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Relacional: <
+    # Relacional: <
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -956,9 +956,9 @@ main:
     add sp, sp, #16
     cmp x9, xzr
     b.eq for_end_2
-    // --- INICIO FOR ---
-    // Declaracion corta: j
-    // Cargando  INT: 1
+    # --- INICIO FOR ---
+    # Declaracion corta: j
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -966,15 +966,15 @@ main:
     add sp, sp, #16
     str x9, [x29, #-64]
     for_start_3:
-    // Lectura de variable: j
+    # Lectura de variable: j
     ldr x9, [x29, #-64]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 4
+    # Cargando  INT: 4
     mov x9, #4
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Relacional: <
+    # Relacional: <
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -987,17 +987,17 @@ main:
     add sp, sp, #16
     cmp x9, xzr
     b.eq for_end_5
-    // Declaracion corta: dif
-    // --- LECTURA DE ARREGLO: matriz ---
+    # Declaracion corta: dif
+    # --- LECTURA DE ARREGLO: matriz ---
     mov x14, xzr
-    // Lectura de variable: i
+    # Lectura de variable: i
     ldr x9, [x29, #-48]
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Lectura de variable: j
+    # Lectura de variable: j
     ldr x9, [x29, #-64]
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1013,24 +1013,24 @@ main:
     ldr x9, [x16, #0]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // --- LECTURA DE ARREGLO: matriz ---
+    # --- LECTURA DE ARREGLO: matriz ---
     mov x14, xzr
-    // Lectura de variable: i
+    # Lectura de variable: i
     ldr x9, [x29, #-48]
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Lectura de variable: j
+    # Lectura de variable: j
     ldr x9, [x29, #-64]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Aritmetica: - (int)
+    # Aritmetica: - (int)
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1050,7 +1050,7 @@ main:
     ldr x9, [x16, #0]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Aritmetica: - (int)
+    # Aritmetica: - (int)
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1061,15 +1061,15 @@ main:
     ldr x9, [sp, #0]
     add sp, sp, #16
     str x9, [x29, #-80]
-    // Lectura de variable: dif
+    # Lectura de variable: dif
     ldr x9, [x29, #-80]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Relacional: <
+    # Relacional: <
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1080,97 +1080,97 @@ main:
     str x9, [sp, #0]
     ldr x9, [sp, #0]
     add sp, sp, #16
-    // If: evaluar condicion
+    # If: evaluar condicion
     cmp x9, xzr
     b.eq if_end_6
-    // If: ejecutar bloque true
-    // Lectura de variable: dif
+    # If: ejecutar bloque true
+    # Lectura de variable: dif
     ldr x9, [x29, #-80]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Negacion Unaria (-)
+    # Negacion Unaria (-)
     ldr x10, [sp, #0]
     add sp, sp, #16
     sub x9, xzr, x10
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Reasignacion de variables (=)
+    # Reasignacion de variables (=)
     ldr x9, [sp, #0]
     add sp, sp, #16
     str x9, [x29, #-80]
     if_end_6:
-    // Lectura de variable: dif
+    # Lectura de variable: dif
     ldr x9, [x29, #-80]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Reasignacion de variables (+=)
+    # Reasignacion de variables (+=)
     ldr x9, [sp, #0]
     add sp, sp, #16
     ldr x20, [x29, #-32]
     add x21, x20, x9
     str x21, [x29, #-32]
     for_update_4:
-    // --- Incremento: j++ ---
+    # --- Incremento: j++ ---
     ldr x9, [x29, #-64]
     add x9, x9, 1
     str x9, [x29, #-64]
     b for_start_3
     for_end_5:
-    // --- FIN FOR ---
+    # --- FIN FOR ---
     for_update_1:
-    // --- Incremento: i++ ---
+    # --- Incremento: i++ ---
     ldr x9, [x29, #-48]
     add x9, x9, 1
     str x9, [x29, #-48]
     b for_start_0
     for_end_2:
-    // --- FIN FOR ---
-    // Lectura de variable: total
+    # --- FIN FOR ---
+    # Lectura de variable: total
     ldr x9, [x29, #-32]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Return: Preparando registros de salida multiples
+    # Return: Preparando registros de salida multiples
     ldr x9, [sp, #0]
     add sp, sp, #16
     mov x0, x9
     b func_end_indiceInestabilidad
     func_end_indiceInestabilidad:
-    // Restaurar LR y FP
+    # Restaurar LR y FP
     ldr x30, [sp, #16]
     ldr x29, [sp, #0]
-    // Restaurar SP
+    # Restaurar SP
     add sp, sp, #368
-    // Retornar
+    # Retornar
     ret
-    // ------- Fin de funcion: indiceInestabilidad -------
-    // ------- Funcion : reglaCramer -------
+    # ------- Fin de funcion: indiceInestabilidad -------
+    # ------- Funcion : reglaCramer -------
     func_reglaCramer:
-    // Reservar espacio para registro de activacion
+    # Reservar espacio para registro de activacion
     sub sp, sp, #416
-    // Guardar FP y LR al fondo del frame
+    # Guardar FP y LR al fondo del frame
     str x29, [sp, #0]
     str x30, [sp, #16]
-    // Actualizar FP (Apunta al inicio del frame)
+    # Actualizar FP (Apunta al inicio del frame)
     add x29, sp, #416
-    // Recibiendo parametro: matriz
+    # Recibiendo parametro: matriz
     str x0, [x29, #-16]
-    // Recibiendo parametro: vector
+    # Recibiendo parametro: vector
     str x1, [x29, #-32]
-    // Declaracion de variables: respuesta
+    # Declaracion de variables: respuesta
     mov x9, xzr
     str x9, [x29, #-64]
     str x9, [x29, #-48]
-    // Declaracion corta: det
-    // --- LECTURA DE ARREGLO: matriz ---
+    # Declaracion corta: det
+    # --- LECTURA DE ARREGLO: matriz ---
     mov x14, xzr
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1186,16 +1186,16 @@ main:
     ldr x9, [x16, #0]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // --- LECTURA DE ARREGLO: matriz ---
+    # --- LECTURA DE ARREGLO: matriz ---
     mov x14, xzr
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1211,7 +1211,7 @@ main:
     ldr x9, [x16, #0]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Aritmetica: * (int)
+    # Aritmetica: * (int)
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1219,16 +1219,16 @@ main:
     mul x9, x11, x10
     sub sp, sp, #16
     str x9, [sp, #0]
-    // --- LECTURA DE ARREGLO: matriz ---
+    # --- LECTURA DE ARREGLO: matriz ---
     mov x14, xzr
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1244,16 +1244,16 @@ main:
     ldr x9, [x16, #0]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // --- LECTURA DE ARREGLO: matriz ---
+    # --- LECTURA DE ARREGLO: matriz ---
     mov x14, xzr
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1269,7 +1269,7 @@ main:
     ldr x9, [x16, #0]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Aritmetica: * (int)
+    # Aritmetica: * (int)
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1277,7 +1277,7 @@ main:
     mul x9, x11, x10
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Aritmetica: - (int)
+    # Aritmetica: - (int)
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1288,15 +1288,15 @@ main:
     ldr x9, [sp, #0]
     add sp, sp, #16
     str x9, [x29, #-80]
-    // Lectura de variable: det
+    # Lectura de variable: det
     ldr x9, [x29, #-80]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Relacional: ==
+    # Relacional: ==
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1307,24 +1307,24 @@ main:
     str x9, [sp, #0]
     ldr x9, [sp, #0]
     add sp, sp, #16
-    // If: evaluar condicion
+    # If: evaluar condicion
     cmp x9, xzr
     b.eq if_end_7
-    // If: ejecutar bloque true
-    // Lectura de variable: respuesta
+    # If: ejecutar bloque true
+    # Lectura de variable: respuesta
     mov x10, 48
     sub x9, x29, x10
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Return: Preparando registros de salida multiples
+    # Return: Preparando registros de salida multiples
     ldr x9, [sp, #0]
     add sp, sp, #16
     mov x0, x9
     b func_end_reglaCramer
     if_end_7:
-    // Declaracion corta: detX
-    // --- LECTURA DE ARREGLO: vector ---
-    // Cargando  INT: 0
+    # Declaracion corta: detX
+    # --- LECTURA DE ARREGLO: vector ---
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1338,16 +1338,16 @@ main:
     ldr x9, [x16, #0]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // --- LECTURA DE ARREGLO: matriz ---
+    # --- LECTURA DE ARREGLO: matriz ---
     mov x14, xzr
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1363,7 +1363,7 @@ main:
     ldr x9, [x16, #0]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Aritmetica: * (int)
+    # Aritmetica: * (int)
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1371,16 +1371,16 @@ main:
     mul x9, x11, x10
     sub sp, sp, #16
     str x9, [sp, #0]
-    // --- LECTURA DE ARREGLO: matriz ---
+    # --- LECTURA DE ARREGLO: matriz ---
     mov x14, xzr
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1396,8 +1396,8 @@ main:
     ldr x9, [x16, #0]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // --- LECTURA DE ARREGLO: vector ---
-    // Cargando  INT: 1
+    # --- LECTURA DE ARREGLO: vector ---
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1411,7 +1411,7 @@ main:
     ldr x9, [x16, #0]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Aritmetica: * (int)
+    # Aritmetica: * (int)
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1419,7 +1419,7 @@ main:
     mul x9, x11, x10
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Aritmetica: - (int)
+    # Aritmetica: - (int)
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1430,17 +1430,17 @@ main:
     ldr x9, [sp, #0]
     add sp, sp, #16
     str x9, [x29, #-96]
-    // Declaracion corta: detY
-    // --- LECTURA DE ARREGLO: matriz ---
+    # Declaracion corta: detY
+    # --- LECTURA DE ARREGLO: matriz ---
     mov x14, xzr
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1456,8 +1456,8 @@ main:
     ldr x9, [x16, #0]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // --- LECTURA DE ARREGLO: vector ---
-    // Cargando  INT: 1
+    # --- LECTURA DE ARREGLO: vector ---
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1471,7 +1471,7 @@ main:
     ldr x9, [x16, #0]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Aritmetica: * (int)
+    # Aritmetica: * (int)
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1479,8 +1479,8 @@ main:
     mul x9, x11, x10
     sub sp, sp, #16
     str x9, [sp, #0]
-    // --- LECTURA DE ARREGLO: vector ---
-    // Cargando  INT: 0
+    # --- LECTURA DE ARREGLO: vector ---
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1494,16 +1494,16 @@ main:
     ldr x9, [x16, #0]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // --- LECTURA DE ARREGLO: matriz ---
+    # --- LECTURA DE ARREGLO: matriz ---
     mov x14, xzr
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1519,7 +1519,7 @@ main:
     ldr x9, [x16, #0]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Aritmetica: * (int)
+    # Aritmetica: * (int)
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1527,7 +1527,7 @@ main:
     mul x9, x11, x10
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Aritmetica: - (int)
+    # Aritmetica: - (int)
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1538,16 +1538,16 @@ main:
     ldr x9, [sp, #0]
     add sp, sp, #16
     str x9, [x29, #-112]
-    // --- ASIGNACION A ARREGLO: respuesta (=) ---
-    // Lectura de variable: detX
+    # --- ASIGNACION A ARREGLO: respuesta (=) ---
+    # Lectura de variable: detX
     ldr x9, [x29, #-96]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Lectura de variable: det
+    # Lectura de variable: det
     ldr x9, [x29, #-80]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Aritmetica: / (int)
+    # Aritmetica: / (int)
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1557,7 +1557,7 @@ main:
     str x9, [sp, #0]
     ldr x19, [sp, #0]
     add sp, sp, #16
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1570,16 +1570,16 @@ main:
     add x16, x12, x15
     sub x16, x29, x16
     str x19, [x16, #0]
-    // --- ASIGNACION A ARREGLO: respuesta (=) ---
-    // Lectura de variable: detY
+    # --- ASIGNACION A ARREGLO: respuesta (=) ---
+    # Lectura de variable: detY
     ldr x9, [x29, #-112]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Lectura de variable: det
+    # Lectura de variable: det
     ldr x9, [x29, #-80]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Aritmetica: / (int)
+    # Aritmetica: / (int)
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1589,7 +1589,7 @@ main:
     str x9, [sp, #0]
     ldr x19, [sp, #0]
     add sp, sp, #16
-    // Cargando  INT: 1
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1602,18 +1602,18 @@ main:
     add x16, x12, x15
     sub x16, x29, x16
     str x19, [x16, #0]
-    // Lectura de variable: respuesta
+    # Lectura de variable: respuesta
     mov x10, 48
     sub x9, x29, x10
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Return: Preparando registros de salida multiples
+    # Return: Preparando registros de salida multiples
     ldr x9, [sp, #0]
     add sp, sp, #16
     mov x0, x9
     b func_end_reglaCramer
     func_end_reglaCramer:
-    // --- Salvando arreglo retornado en el HEAP ---
+    # --- Salvando arreglo retornado en el HEAP ---
     ldr x1, =string_heap_ptr
     ldr x2, [x1]
     mov x3, 32
@@ -1634,34 +1634,34 @@ main:
     b copy_loop_reglaCramer
     copy_done_reglaCramer:
     mov x0, x5
-    // Restaurar LR y FP
+    # Restaurar LR y FP
     ldr x30, [sp, #16]
     ldr x29, [sp, #0]
-    // Restaurar SP
+    # Restaurar SP
     add sp, sp, #416
-    // Retornar
+    # Retornar
     ret
-    // ------- Fin de funcion: reglaCramer -------
-    // ------- Funcion : promedioCapas -------
+    # ------- Fin de funcion: reglaCramer -------
+    # ------- Funcion : promedioCapas -------
     func_promedioCapas:
-    // Reservar espacio para registro de activacion
+    # Reservar espacio para registro de activacion
     sub sp, sp, #496
-    // Guardar FP y LR al fondo del frame
+    # Guardar FP y LR al fondo del frame
     str x29, [sp, #0]
     str x30, [sp, #16]
-    // Actualizar FP (Apunta al inicio del frame)
+    # Actualizar FP (Apunta al inicio del frame)
     add x29, sp, #496
-    // Recibiendo parametro: cubo
+    # Recibiendo parametro: cubo
     str x0, [x29, #-16]
-    // Declaracion de variables: salida
+    # Declaracion de variables: salida
     mov x9, xzr
     str x9, [x29, #-80]
     str x9, [x29, #-64]
     str x9, [x29, #-48]
     str x9, [x29, #-32]
-    // --- INICIO FOR ---
-    // Declaracion corta: k
-    // Cargando  INT: 0
+    # --- INICIO FOR ---
+    # Declaracion corta: k
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1669,15 +1669,15 @@ main:
     add sp, sp, #16
     str x9, [x29, #-96]
     for_start_8:
-    // Lectura de variable: k
+    # Lectura de variable: k
     ldr x9, [x29, #-96]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 2
+    # Cargando  INT: 2
     mov x9, #2
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Relacional: <
+    # Relacional: <
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1690,9 +1690,9 @@ main:
     add sp, sp, #16
     cmp x9, xzr
     b.eq for_end_10
-    // --- INICIO FOR ---
-    // Declaracion corta: i
-    // Cargando  INT: 0
+    # --- INICIO FOR ---
+    # Declaracion corta: i
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1700,15 +1700,15 @@ main:
     add sp, sp, #16
     str x9, [x29, #-112]
     for_start_11:
-    // Lectura de variable: i
+    # Lectura de variable: i
     ldr x9, [x29, #-112]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 2
+    # Cargando  INT: 2
     mov x9, #2
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Relacional: <
+    # Relacional: <
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1721,17 +1721,17 @@ main:
     add sp, sp, #16
     cmp x9, xzr
     b.eq for_end_13
-    // Declaracion de variables: suma
-    // Cargando  INT: 0
+    # Declaracion de variables: suma
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x9, [sp, #0]
     add sp, sp, #16
     str x9, [x29, #-128]
-    // --- INICIO FOR ---
-    // Declaracion corta: j
-    // Cargando  INT: 0
+    # --- INICIO FOR ---
+    # Declaracion corta: j
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1739,15 +1739,15 @@ main:
     add sp, sp, #16
     str x9, [x29, #-144]
     for_start_14:
-    // Lectura de variable: j
+    # Lectura de variable: j
     ldr x9, [x29, #-144]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 2
+    # Cargando  INT: 2
     mov x9, #2
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Relacional: <
+    # Relacional: <
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1760,16 +1760,16 @@ main:
     add sp, sp, #16
     cmp x9, xzr
     b.eq for_end_16
-    // --- LECTURA DE ARREGLO: cubo ---
+    # --- LECTURA DE ARREGLO: cubo ---
     mov x14, xzr
-    // Lectura de variable: k
+    # Lectura de variable: k
     ldr x9, [x29, #-96]
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Lectura de variable: i
+    # Lectura de variable: i
     ldr x9, [x29, #-112]
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1778,7 +1778,7 @@ main:
     mov x12, 2
     mul x14, x14, x12
     add x14, x14, x11
-    // Lectura de variable: j
+    # Lectura de variable: j
     ldr x9, [x29, #-144]
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1794,30 +1794,30 @@ main:
     ldr x9, [x16, #0]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Reasignacion de variables (+=)
+    # Reasignacion de variables (+=)
     ldr x9, [sp, #0]
     add sp, sp, #16
     ldr x20, [x29, #-128]
     add x21, x20, x9
     str x21, [x29, #-128]
     for_update_15:
-    // --- Incremento: j++ ---
+    # --- Incremento: j++ ---
     ldr x9, [x29, #-144]
     add x9, x9, 1
     str x9, [x29, #-144]
     b for_start_14
     for_end_16:
-    // --- FIN FOR ---
-    // --- ASIGNACION A ARREGLO: salida (=) ---
-    // Lectura de variable: suma
+    # --- FIN FOR ---
+    # --- ASIGNACION A ARREGLO: salida (=) ---
+    # Lectura de variable: suma
     ldr x9, [x29, #-128]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando FLOAT: 2.0
+    # Cargando FLOAT: 2.0
     ldr w9, =1073741824
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Aritmetica: / (float)
+    # Aritmetica: / (float)
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1831,14 +1831,14 @@ main:
     ldr x19, [sp, #0]
     add sp, sp, #16
     mov x14, xzr
-    // Lectura de variable: k
+    # Lectura de variable: k
     ldr x9, [x29, #-96]
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Lectura de variable: i
+    # Lectura de variable: i
     ldr x9, [x29, #-112]
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1854,33 +1854,33 @@ main:
     sub x16, x29, x16
     str x19, [x16, #0]
     for_update_12:
-    // --- Incremento: i++ ---
+    # --- Incremento: i++ ---
     ldr x9, [x29, #-112]
     add x9, x9, 1
     str x9, [x29, #-112]
     b for_start_11
     for_end_13:
-    // --- FIN FOR ---
+    # --- FIN FOR ---
     for_update_9:
-    // --- Incremento: k++ ---
+    # --- Incremento: k++ ---
     ldr x9, [x29, #-96]
     add x9, x9, 1
     str x9, [x29, #-96]
     b for_start_8
     for_end_10:
-    // --- FIN FOR ---
-    // Lectura de variable: salida
+    # --- FIN FOR ---
+    # Lectura de variable: salida
     mov x10, 32
     sub x9, x29, x10
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Return: Preparando registros de salida multiples
+    # Return: Preparando registros de salida multiples
     ldr x9, [sp, #0]
     add sp, sp, #16
     mov x0, x9
     b func_end_promedioCapas
     func_end_promedioCapas:
-    // --- Salvando arreglo retornado en el HEAP ---
+    # --- Salvando arreglo retornado en el HEAP ---
     ldr x1, =string_heap_ptr
     ldr x2, [x1]
     mov x3, 64
@@ -1901,26 +1901,26 @@ main:
     b copy_loop_promedioCapas
     copy_done_promedioCapas:
     mov x0, x5
-    // Restaurar LR y FP
+    # Restaurar LR y FP
     ldr x30, [sp, #16]
     ldr x29, [sp, #0]
-    // Restaurar SP
+    # Restaurar SP
     add sp, sp, #496
-    // Retornar
+    # Retornar
     ret
-    // ------- Fin de funcion: promedioCapas -------
-    // ------- Funcion : softmax -------
+    # ------- Fin de funcion: promedioCapas -------
+    # ------- Funcion : softmax -------
     func_softmax:
-    // Reservar espacio para registro de activacion
+    # Reservar espacio para registro de activacion
     sub sp, sp, #752
-    // Guardar FP y LR al fondo del frame
+    # Guardar FP y LR al fondo del frame
     str x29, [sp, #0]
     str x30, [sp, #16]
-    // Actualizar FP (Apunta al inicio del frame)
+    # Actualizar FP (Apunta al inicio del frame)
     add x29, sp, #752
-    // Recibiendo parametro: matriz
+    # Recibiendo parametro: matriz
     str x0, [x29, #-16]
-    // Declaracion de variables: salida
+    # Declaracion de variables: salida
     mov x9, xzr
     str x9, [x29, #-112]
     str x9, [x29, #-96]
@@ -1928,9 +1928,9 @@ main:
     str x9, [x29, #-64]
     str x9, [x29, #-48]
     str x9, [x29, #-32]
-    // --- INICIO FOR ---
-    // Declaracion corta: i
-    // Cargando  INT: 0
+    # --- INICIO FOR ---
+    # Declaracion corta: i
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1938,15 +1938,15 @@ main:
     add sp, sp, #16
     str x9, [x29, #-128]
     for_start_17:
-    // Lectura de variable: i
+    # Lectura de variable: i
     ldr x9, [x29, #-128]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 2
+    # Cargando  INT: 2
     mov x9, #2
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Relacional: <
+    # Relacional: <
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -1959,17 +1959,17 @@ main:
     add sp, sp, #16
     cmp x9, xzr
     b.eq for_end_19
-    // Declaracion de variables: max
-    // --- LECTURA DE ARREGLO: matriz ---
+    # Declaracion de variables: max
+    # --- LECTURA DE ARREGLO: matriz ---
     mov x14, xzr
-    // Lectura de variable: i
+    # Lectura de variable: i
     ldr x9, [x29, #-128]
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Cargando  INT: 0
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1988,9 +1988,9 @@ main:
     ldr x9, [sp, #0]
     add sp, sp, #16
     str x9, [x29, #-144]
-    // --- INICIO FOR ---
-    // Declaracion corta: j
-    // Cargando  INT: 1
+    # --- INICIO FOR ---
+    # Declaracion corta: j
+    # Cargando  INT: 1
     mov x9, #1
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -1998,15 +1998,15 @@ main:
     add sp, sp, #16
     str x9, [x29, #-160]
     for_start_20:
-    // Lectura de variable: j
+    # Lectura de variable: j
     ldr x9, [x29, #-160]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 3
+    # Cargando  INT: 3
     mov x9, #3
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Relacional: <
+    # Relacional: <
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -2019,16 +2019,16 @@ main:
     add sp, sp, #16
     cmp x9, xzr
     b.eq for_end_22
-    // --- LECTURA DE ARREGLO: matriz ---
+    # --- LECTURA DE ARREGLO: matriz ---
     mov x14, xzr
-    // Lectura de variable: i
+    # Lectura de variable: i
     ldr x9, [x29, #-128]
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Lectura de variable: j
+    # Lectura de variable: j
     ldr x9, [x29, #-160]
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -2044,11 +2044,11 @@ main:
     ldr x9, [x16, #0]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Lectura de variable: max
+    # Lectura de variable: max
     ldr x9, [x29, #-144]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Relacional: >
+    # Relacional: >
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -2061,20 +2061,20 @@ main:
     str x9, [sp, #0]
     ldr x9, [sp, #0]
     add sp, sp, #16
-    // If: evaluar condicion
+    # If: evaluar condicion
     cmp x9, xzr
     b.eq if_end_23
-    // If: ejecutar bloque true
-    // --- LECTURA DE ARREGLO: matriz ---
+    # If: ejecutar bloque true
+    # --- LECTURA DE ARREGLO: matriz ---
     mov x14, xzr
-    // Lectura de variable: i
+    # Lectura de variable: i
     ldr x9, [x29, #-128]
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Lectura de variable: j
+    # Lectura de variable: j
     ldr x9, [x29, #-160]
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -2090,35 +2090,35 @@ main:
     ldr x9, [x16, #0]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Reasignacion de variables (=)
+    # Reasignacion de variables (=)
     ldr x9, [sp, #0]
     add sp, sp, #16
     str x9, [x29, #-144]
     if_end_23:
     for_update_21:
-    // --- Incremento: j++ ---
+    # --- Incremento: j++ ---
     ldr x9, [x29, #-160]
     add x9, x9, 1
     str x9, [x29, #-160]
     b for_start_20
     for_end_22:
-    // --- FIN FOR ---
-    // Declaracion de variables: sum
-    // Cargando FLOAT: 0.0
+    # --- FIN FOR ---
+    # Declaracion de variables: sum
+    # Cargando FLOAT: 0.0
     ldr w9, =0
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x9, [sp, #0]
     add sp, sp, #16
     str x9, [x29, #-160]
-    // Declaracion de variables: exp
+    # Declaracion de variables: exp
     mov x9, xzr
     str x9, [x29, #-208]
     str x9, [x29, #-192]
     str x9, [x29, #-176]
-    // --- INICIO FOR ---
-    // Declaracion corta: j
-    // Cargando  INT: 0
+    # --- INICIO FOR ---
+    # Declaracion corta: j
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -2126,15 +2126,15 @@ main:
     add sp, sp, #16
     str x9, [x29, #-224]
     for_start_24:
-    // Lectura de variable: j
+    # Lectura de variable: j
     ldr x9, [x29, #-224]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 3
+    # Cargando  INT: 3
     mov x9, #3
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Relacional: <
+    # Relacional: <
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -2147,21 +2147,21 @@ main:
     add sp, sp, #16
     cmp x9, xzr
     b.eq for_end_26
-    // Declaracion corta: v
-    // Cargando FLOAT: 1.0
+    # Declaracion corta: v
+    # Cargando FLOAT: 1.0
     ldr w9, =1065353216
     sub sp, sp, #16
     str x9, [sp, #0]
-    // --- LECTURA DE ARREGLO: matriz ---
+    # --- LECTURA DE ARREGLO: matriz ---
     mov x14, xzr
-    // Lectura de variable: i
+    # Lectura de variable: i
     ldr x9, [x29, #-128]
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Lectura de variable: j
+    # Lectura de variable: j
     ldr x9, [x29, #-224]
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -2177,11 +2177,11 @@ main:
     ldr x9, [x16, #0]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Lectura de variable: max
+    # Lectura de variable: max
     ldr x9, [x29, #-144]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Aritmetica: - (float)
+    # Aritmetica: - (float)
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -2192,7 +2192,7 @@ main:
     fmov w9, s2
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Aritmetica: + (float)
+    # Aritmetica: + (float)
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -2206,15 +2206,15 @@ main:
     ldr x9, [sp, #0]
     add sp, sp, #16
     str x9, [x29, #-240]
-    // Lectura de variable: v
+    # Lectura de variable: v
     ldr x9, [x29, #-240]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando FLOAT: 0.1
+    # Cargando FLOAT: 0.1
     ldr w9, =1036831949
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Relacional: <
+    # Relacional: <
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -2227,27 +2227,27 @@ main:
     str x9, [sp, #0]
     ldr x9, [sp, #0]
     add sp, sp, #16
-    // If: evaluar condicion
+    # If: evaluar condicion
     cmp x9, xzr
     b.eq if_end_27
-    // If: ejecutar bloque true
-    // Cargando FLOAT: 0.1
+    # If: ejecutar bloque true
+    # Cargando FLOAT: 0.1
     ldr w9, =1036831949
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Reasignacion de variables (=)
+    # Reasignacion de variables (=)
     ldr x9, [sp, #0]
     add sp, sp, #16
     str x9, [x29, #-240]
     if_end_27:
-    // --- ASIGNACION A ARREGLO: exp (=) ---
-    // Lectura de variable: v
+    # --- ASIGNACION A ARREGLO: exp (=) ---
+    # Lectura de variable: v
     ldr x9, [x29, #-240]
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x19, [sp, #0]
     add sp, sp, #16
-    // Lectura de variable: j
+    # Lectura de variable: j
     ldr x9, [x29, #-224]
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -2260,11 +2260,11 @@ main:
     add x16, x12, x15
     sub x16, x29, x16
     str x19, [x16, #0]
-    // Lectura de variable: v
+    # Lectura de variable: v
     ldr x9, [x29, #-240]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Reasignacion de variables (+=)
+    # Reasignacion de variables (+=)
     ldr x9, [sp, #0]
     add sp, sp, #16
     ldr x20, [x29, #-160]
@@ -2274,16 +2274,16 @@ main:
     fmov w21, s2
     str x21, [x29, #-160]
     for_update_25:
-    // --- Incremento: j++ ---
+    # --- Incremento: j++ ---
     ldr x9, [x29, #-224]
     add x9, x9, 1
     str x9, [x29, #-224]
     b for_start_24
     for_end_26:
-    // --- FIN FOR ---
-    // --- INICIO FOR ---
-    // Declaracion corta: j
-    // Cargando  INT: 0
+    # --- FIN FOR ---
+    # --- INICIO FOR ---
+    # Declaracion corta: j
+    # Cargando  INT: 0
     mov x9, #0
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -2291,15 +2291,15 @@ main:
     add sp, sp, #16
     str x9, [x29, #-224]
     for_start_28:
-    // Lectura de variable: j
+    # Lectura de variable: j
     ldr x9, [x29, #-224]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Cargando  INT: 3
+    # Cargando  INT: 3
     mov x9, #3
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Relacional: <
+    # Relacional: <
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -2312,9 +2312,9 @@ main:
     add sp, sp, #16
     cmp x9, xzr
     b.eq for_end_30
-    // --- ASIGNACION A ARREGLO: salida (=) ---
-    // --- LECTURA DE ARREGLO: exp ---
-    // Lectura de variable: j
+    # --- ASIGNACION A ARREGLO: salida (=) ---
+    # --- LECTURA DE ARREGLO: exp ---
+    # Lectura de variable: j
     ldr x9, [x29, #-224]
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -2329,11 +2329,11 @@ main:
     ldr x9, [x16, #0]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Lectura de variable: sum
+    # Lectura de variable: sum
     ldr x9, [x29, #-160]
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Aritmetica: / (float)
+    # Aritmetica: / (float)
     ldr x10, [sp, #0]
     add sp, sp, #16
     ldr x11, [sp, #0]
@@ -2347,14 +2347,14 @@ main:
     ldr x19, [sp, #0]
     add sp, sp, #16
     mov x14, xzr
-    // Lectura de variable: i
+    # Lectura de variable: i
     ldr x9, [x29, #-128]
     sub sp, sp, #16
     str x9, [sp, #0]
     ldr x11, [sp, #0]
     add sp, sp, #16
     mov x14, x11
-    // Lectura de variable: j
+    # Lectura de variable: j
     ldr x9, [x29, #-224]
     sub sp, sp, #16
     str x9, [sp, #0]
@@ -2370,33 +2370,33 @@ main:
     sub x16, x29, x16
     str x19, [x16, #0]
     for_update_29:
-    // --- Incremento: j++ ---
+    # --- Incremento: j++ ---
     ldr x9, [x29, #-224]
     add x9, x9, 1
     str x9, [x29, #-224]
     b for_start_28
     for_end_30:
-    // --- FIN FOR ---
+    # --- FIN FOR ---
     for_update_18:
-    // --- Incremento: i++ ---
+    # --- Incremento: i++ ---
     ldr x9, [x29, #-128]
     add x9, x9, 1
     str x9, [x29, #-128]
     b for_start_17
     for_end_19:
-    // --- FIN FOR ---
-    // Lectura de variable: salida
+    # --- FIN FOR ---
+    # Lectura de variable: salida
     mov x10, 32
     sub x9, x29, x10
     sub sp, sp, #16
     str x9, [sp, #0]
-    // Return: Preparando registros de salida multiples
+    # Return: Preparando registros de salida multiples
     ldr x9, [sp, #0]
     add sp, sp, #16
     mov x0, x9
     b func_end_softmax
     func_end_softmax:
-    // --- Salvando arreglo retornado en el HEAP ---
+    # --- Salvando arreglo retornado en el HEAP ---
     ldr x1, =string_heap_ptr
     ldr x2, [x1]
     mov x3, 96
@@ -2417,14 +2417,14 @@ main:
     b copy_loop_softmax
     copy_done_softmax:
     mov x0, x5
-    // Restaurar LR y FP
+    # Restaurar LR y FP
     ldr x30, [sp, #16]
     ldr x29, [sp, #0]
-    // Restaurar SP
+    # Restaurar SP
     add sp, sp, #752
-    // Retornar
+    # Retornar
     ret
-    // ------- Fin de funcion: softmax -------
+    # ------- Fin de funcion: softmax -------
 .section .rodata
 fmt_int: .asciz "%d"
 fmt_float: .asciz "%.7g"

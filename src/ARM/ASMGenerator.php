@@ -258,7 +258,7 @@ class ASMGenerator {
     }
 
     public function comment($text) {
-        $this->instrucciones[] = new Instruction("// ".$text);
+        $this->instrucciones[] = new Instruction("# ".$text);
     }
 
     public function itoa() {

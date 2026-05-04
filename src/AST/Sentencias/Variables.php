@@ -155,10 +155,29 @@ trait Variables
                 }
                 for ($i = count($ids) - 1; $i >= 0; $i--) {
                     $valReg = $this->stack->popVal("x9");
+                    
+                    $tipoValor = $tiposEvaluados[$i];
+                    if ($tipoDeclarado !== $tipoValor) {
+                        if ($tipoDeclarado === Result::FLOAT && ($tipoValor === Result::INT || $tipoValor === Result::CHAR)) {
+                            $wValReg = "w" . str_replace("x", "", $valReg);
+                            $this->asmGenerador->instrucciones[] = new Instruction("scvtf", "s0", $wValReg);
+                            $this->asmGenerador->instrucciones[] = new Instruction("fmov", "w9", "s0");
+                            $valReg = "x9";
+                        } else {
+                            $this->addErr("Error Semantico: Incompatibilidad de tipos en declaracion. No se puede asignar '" . $tipoValor . "' a una variable de tipo '" . $tipoDeclarado . "'.", $ctx);
+                            
+                            $this->asmGenerador->str("xzr", "x29", "-" . $offsets[$i]);
+                            
+                            
+                            continue; 
+                        }
+                    }
+
                     $this->asmGenerador->str($valReg, "x29", "-" . $offsets[$i]);
                 }
             }
         } else {
+            // valores por defecto
             if ($tipoDeclarado === Result::STRING) {
                 $labelEmpty = $this->asmGenerador->addString(""); 
                 $this->asmGenerador->ldrl("x9", $labelEmpty);
@@ -293,11 +312,16 @@ trait Variables
                 $tipoVal = $tiposValor[$i];
 
                 if ($ope === "=") {
-                    if ($tipoDest === Result::FLOAT && ($tipoVal === Result::INT || $tipoVal === Result::CHAR)) {
-                        $wValReg = "w" . str_replace("x", "", $valReg);
-                        $this->asmGenerador->instrucciones[] = new Instruction("scvtf", "s0", $wValReg);
-                        $this->asmGenerador->instrucciones[] = new Instruction("fmov", "w9", "s0");
-                        $valReg = "x9";
+                    if ($tipoDest !== $tipoVal) {
+                        if ($tipoDest === Result::FLOAT && ($tipoVal === Result::INT || $tipoVal === Result::CHAR)) {
+                            $wValReg = "w" . str_replace("x", "", $valReg);
+                            $this->asmGenerador->instrucciones[] = new Instruction("scvtf", "s0", $wValReg);
+                            $this->asmGenerador->instrucciones[] = new Instruction("fmov", "w9", "s0");
+                            $valReg = "x9";
+                        } else {
+                            $this->addErr("Error Semantico: No se puede asignar un valor de tipo '" . $tipoVal . "' a la variable de tipo '" . $tipoDest . "'.", $ctx);
+                            continue;
+                        }
                     }
                     $this->asmGenerador->str($valReg, "x29", "-$offset");
                 } else {
