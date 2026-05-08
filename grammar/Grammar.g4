@@ -185,6 +185,8 @@ logicAnd
 
 expression_rational
     : expression_rational (EQUALITY | INEQUALITY | GREATER | LESS | GREATER_EQUAL | LESS_EQUAL ) expression_arithmetic # RatExpr
+    | expression_arithmetic IN CLASP_OPEN expression PUNTOPUNTO expression CLASP_CLOSE              # RangeExpr
+    | expression_arithmetic NOT_IN IN CLASP_OPEN expression PUNTOPUNTO expression CLASP_CLOSE       # RangeNotExpr
     | expression_arithmetic                 # RatSimple
     ;
 
@@ -230,6 +232,9 @@ typesStatics
 
 
 // Lexer
+IN: 'in';
+NOT_IN: 'not';
+PUNTOPUNTO: '..';
 
 OR: '||';
 AND: '&&';

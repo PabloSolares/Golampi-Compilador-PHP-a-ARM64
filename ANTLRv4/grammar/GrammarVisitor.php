@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Generated from grammar/Grammar.g4 by ANTLR 4.13.2
+ * Generated from ./grammar/Grammar.g4 by ANTLR 4.13.2
  */
 
 use Antlr\Antlr4\Runtime\Tree\ParseTreeVisitor;
@@ -622,6 +622,26 @@ interface GrammarVisitor extends ParseTreeVisitor
 	 * @return mixed The visitor result.
 	 */
 	public function visitRatSimple(Context\RatSimpleContext $context);
+
+	/**
+	 * Visit a parse tree produced by the `RangeNotExpr` labeled alternative
+	 * in {@see GrammarParser::expression_rational()}.
+	 *
+	 * @param Context\RangeNotExprContext $context The parse tree.
+	 *
+	 * @return mixed The visitor result.
+	 */
+	public function visitRangeNotExpr(Context\RangeNotExprContext $context);
+
+	/**
+	 * Visit a parse tree produced by the `RangeExpr` labeled alternative
+	 * in {@see GrammarParser::expression_rational()}.
+	 *
+	 * @param Context\RangeExprContext $context The parse tree.
+	 *
+	 * @return mixed The visitor result.
+	 */
+	public function visitRangeExpr(Context\RangeExprContext $context);
 
 	/**
 	 * Visit a parse tree produced by the `AddSubSimple` labeled alternative

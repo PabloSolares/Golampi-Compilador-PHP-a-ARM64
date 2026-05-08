@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Generated from grammar/Grammar.g4 by ANTLR 4.13.2
+ * Generated from ./grammar/Grammar.g4 by ANTLR 4.13.2
  */
 
 use Antlr\Antlr4\Runtime\Tree\AbstractParseTreeVisitor;
@@ -713,6 +713,28 @@ class GrammarBaseVisitor extends AbstractParseTreeVisitor implements GrammarVisi
 	 * {@see self::visitChildren()} on `context`.
 	 */
 	public function visitRatSimple(Context\RatSimpleContext $context)
+	{
+	    return $this->visitChildren($context);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * The default implementation returns the result of calling
+	 * {@see self::visitChildren()} on `context`.
+	 */
+	public function visitRangeNotExpr(Context\RangeNotExprContext $context)
+	{
+	    return $this->visitChildren($context);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * The default implementation returns the result of calling
+	 * {@see self::visitChildren()} on `context`.
+	 */
+	public function visitRangeExpr(Context\RangeExprContext $context)
 	{
 	    return $this->visitChildren($context);
 	}

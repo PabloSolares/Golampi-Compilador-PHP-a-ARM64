@@ -10,6 +10,12 @@ use Context\UnaryNotContext;
 use App\Env\Result;
 use Context\BreakStmContext;
 use Context\ContinueStmContext;
+use Context\RangeExprContext;
+use Context\RangeNotExprContext;
+
+
+
+
 
 trait Booleanas
 {
@@ -173,4 +179,62 @@ trait Booleanas
         
         return Result::buildVacio();
     }
+
+    public function visitRangeExpr(RangeExprContext $ctx){
+        $left = $this->visit($ctx->expression_arithmetic());
+        $min = $this->visit($ctx->expression(0));
+        $max = $this->visit($ctx->expression(1));
+
+        if($left->tipo !== Result::INT || $min->tipo !== Result::INT || $max->tipo !== Result::INT ){
+            // tiene que ser int
+        }
+
+        $this->asmGenerador->comment("-- Comparacion por rango --- ");
+
+        $maxReg = $this->stack->popVal("x13");
+        $minReg = $this->stack->popVal("x12");
+        $leftReg = $this->stack->popVal("x11");
+
+        $this->asmGenerador->instrucciones[] = new Instruction("cmp", $leftReg, $minReg);
+        $this->asmGenerador->instrucciones[] = new Instruction("cset", "x9", "ge");
+
+        $this->asmGenerador->instrucciones[] = new Instruction("cmp", $leftReg, $maxReg);
+        $this->asmGenerador->instrucciones[] = new Instruction("cset", "x10", "le");
+
+        $this->asmGenerador->instrucciones[] = new Instruction("and", "x9", "x9", "x10");
+
+        $this->stack->pushVal("x9");
+
+        return Result::stack(Result::BOOL, $this->stack->getStackOff());
+    }
+
+    public function visitRangeNotExpr(RangeNotExprContext $ctx){
+        $left = $this->visit($ctx->expression_arithmetic());
+        $min = $this->visit($ctx->expression(0));
+        $max = $this->visit($ctx->expression(1));
+
+        if($left->tipo !== Result::INT || $min->tipo !== Result::INT || $max->tipo !== Result::INT ){
+            // tiene que ser int
+        }
+
+        $this->asmGenerador->comment("-- Comparacion por rango --- ");
+
+        $maxReg = $this->stack->popVal("x13");
+        $minReg = $this->stack->popVal("x12");
+        $leftReg = $this->stack->popVal("x11");
+
+        $this->asmGenerador->instrucciones[] = new Instruction("cmp", $leftReg, $minReg);
+        $this->asmGenerador->instrucciones[] = new Instruction("cset", "x9", "lt");
+
+        $this->asmGenerador->instrucciones[] = new Instruction("cmp", $leftReg, $maxReg);
+        $this->asmGenerador->instrucciones[] = new Instruction("cset", "x10", "gt");
+
+        $this->asmGenerador->instrucciones[] = new Instruction("orr", "x9", "x9", "x10");
+
+        $this->stack->pushVal("x9");
+
+        return Result::stack(Result::BOOL, $this->stack->getStackOff());
+    }
+
+    
 }

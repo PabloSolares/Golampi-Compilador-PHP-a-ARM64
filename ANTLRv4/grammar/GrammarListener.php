@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Generated from grammar/Grammar.g4 by ANTLR 4.13.2
+ * Generated from ./grammar/Grammar.g4 by ANTLR 4.13.2
  */
 
 use Antlr\Antlr4\Runtime\Tree\ParseTreeListener;
@@ -723,6 +723,30 @@ interface GrammarListener extends ParseTreeListener {
 	 * @param $context The parse tree.
 	 */
 	public function exitRatSimple(Context\RatSimpleContext $context): void;
+	/**
+	 * Enter a parse tree produced by the `RangeNotExpr`
+	 * labeled alternative in {@see GrammarParser::expression_rational()}.
+	 * @param $context The parse tree.
+	 */
+	public function enterRangeNotExpr(Context\RangeNotExprContext $context): void;
+	/**
+	 * Exit a parse tree produced by the `RangeNotExpr` labeled alternative
+	 * in {@see GrammarParser::expression_rational()}.
+	 * @param $context The parse tree.
+	 */
+	public function exitRangeNotExpr(Context\RangeNotExprContext $context): void;
+	/**
+	 * Enter a parse tree produced by the `RangeExpr`
+	 * labeled alternative in {@see GrammarParser::expression_rational()}.
+	 * @param $context The parse tree.
+	 */
+	public function enterRangeExpr(Context\RangeExprContext $context): void;
+	/**
+	 * Exit a parse tree produced by the `RangeExpr` labeled alternative
+	 * in {@see GrammarParser::expression_rational()}.
+	 * @param $context The parse tree.
+	 */
+	public function exitRangeExpr(Context\RangeExprContext $context): void;
 	/**
 	 * Enter a parse tree produced by the `AddSubSimple`
 	 * labeled alternative in {@see GrammarParser::expression_arithmetic()}.

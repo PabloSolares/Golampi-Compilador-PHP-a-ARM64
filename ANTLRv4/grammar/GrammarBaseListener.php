@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Generated from grammar/Grammar.g4 by ANTLR 4.13.2
+ * Generated from ./grammar/Grammar.g4 by ANTLR 4.13.2
  */
 
 
@@ -848,6 +848,32 @@ class GrammarBaseListener implements GrammarListener
 	 * The default implementation does nothing.
 	 */
 	public function exitRatSimple(Context\RatSimpleContext $context): void {}
+	/**
+	 * {@inheritdoc}
+	 *
+	 * The default implementation does nothing.
+	 */
+	public function enterRangeNotExpr(Context\RangeNotExprContext $context): void {}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * The default implementation does nothing.
+	 */
+	public function exitRangeNotExpr(Context\RangeNotExprContext $context): void {}
+	/**
+	 * {@inheritdoc}
+	 *
+	 * The default implementation does nothing.
+	 */
+	public function enterRangeExpr(Context\RangeExprContext $context): void {}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * The default implementation does nothing.
+	 */
+	public function exitRangeExpr(Context\RangeExprContext $context): void {}
 	/**
 	 * {@inheritdoc}
 	 *
